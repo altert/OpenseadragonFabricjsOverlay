@@ -1,6 +1,6 @@
 # Fabricjs Overlay for OpenSeadragon
 
-An OpenSeadragon plugin that adds fabricjs overlay capability.
+An [OpenSeadragon](http://openseadragon.github.io) plugin that adds fabricjs overlay capability.
 
 Compatible with OpenSeadragon 2.0.0 or greater.
 
