@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>OpenSeadragon Fabricjs Overlay Demo</title>
+        <script src="openseadragon/openseadragon.js"></script>
+        <script src="openseadragon-fabricjs-overlay.js"></script>
+     
+        
+        <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+        <script src="fabricjs/fabricjs.min.js"></script>
+        <style type="text/css">
+
+            html,
+            body,
+            .openseadragon1 {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+            }
+
+        </style>
+        <script>
+
+            // ----------
+            App = {
+                // ----------
+                init: function() {
+                    var self = this;
+
+                    var tileSource = {
+                        Image: {
+                            xmlns: "http://schemas.microsoft.com/deepzoom/2008",
+                            Url: "http://openseadragon.github.io/example-images/highsmith/highsmith_files/",
+                            Format: "jpg",
+                            Overlap: "2",
+                            TileSize: "256",
+                            Size: {
+                                Height: "9221",
+                                Width:  "7026"
+                            }
+                        }
+                    };
+
+                    this.viewer = OpenSeadragon({
+                        id: "contentDiv",
+                        prefixUrl: "openseadragon/images/",
+                        tileSources: [{
+                            tileSource: tileSource,
+                            width: 2,
+                            y: 0.5,
+                            x: 0.5
+                        }]
+                    });
+
+                    var overlay = this.viewer.fabricjsOverlay();
+
+                    
+                    var rect = new fabric.Rect({
+                      left: 0,
+                      top: 0,
+                      fill: 'red',
+                      width: 1000,
+                      height: 1000
+                    }); 
+                   
+                    overlay.fabricCanvas().add(rect);
+                    
+                    overlay.fabricCanvas().on('mouse:down', function (options) {
+                        if (options.target) {
+                            console.log('click');
+                        }
+                    });
+                    
+                    $(window).resize(function() {
+                        overlay.resize();
+                    });
+                }
+            };
+
+            // ----------
+            $(document).ready(function() {
+                App.init();
+            });
+
+        </script>
+    </head>
+    <body>
+        <div id="contentDiv" class="openseadragon1"></div>
+    </body>
+</html>
