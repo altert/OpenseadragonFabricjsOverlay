@@ -39,15 +39,15 @@
         this._canvas.setAttribute('id', 'osd-overlaycanvas');
         this._canvasdiv.appendChild(this._canvas);
         this.resize();
-        this._fabriccanvas=new fabric.Canvas('osd-overlaycanvas');
+        this._fabricCanvas=new fabric.Canvas('osd-overlaycanvas');
         // disable fabric selection because default click is tracked by OSD
-        this._fabriccanvas.selection=false; 
+        this._fabricCanvas.selection=false; 
         // prevent OSD click elements on fabric objects
-        this._fabriccanvas.on('mouse:down', function (options) {
-           if (options.target) {
-              options.e.preventDefault();
-              options.e.stopPropagation();
-              }
+        this._fabricCanvas.on('mouse:down', function (options) {
+            if (options.target) {
+                options.e.preventDefault();
+                options.e.stopPropagation();
+            }
         });
         
     
@@ -72,12 +72,12 @@
         canvas: function() {
             return this._canvas;
         },
-        fabriccanvas: function() {
-            return this._fabriccanvas;
+        fabricCanvas: function() {
+            return this._fabricCanvas;
         },
         // ----------
         clear: function() {
-            this._fabriccanvas.clearAll();
+            this._fabricCanvas.clearAll();
         },
         // ----------
         resize: function() {
@@ -102,8 +102,8 @@
            var image1WindowPoint = image1.imageToWindowCoordinates(origin);        
            var x=Math.round(image1WindowPoint.x);
            var y=Math.round(image1WindowPoint.y);
-           this._fabriccanvas.setZoom(zoom);
-           this._fabriccanvas.absolutePan(new fabric.Point(-x,-y));
+           this._fabricCanvas.setZoom(zoom);
+           this._fabricCanvas.absolutePan(new fabric.Point(-x,-y));
        }
         
     };

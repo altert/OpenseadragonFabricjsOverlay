@@ -63,12 +63,12 @@
                       height: 1000
                     }); 
                    
-                    overlay.fabriccanvas().add(rect);
+                    overlay.fabricCanvas().add(rect);
                     
-                    overlay.fabriccanvas().on('mouse:down', function (options) {
-                       if (options.target) {
-                         console.log('click');
-                         }
+                    overlay.fabricCanvas().on('mouse:down', function (options) {
+                        if (options.target) {
+                            console.log('click');
+                        }
                     });
                     
                     $(window).resize(function() {
