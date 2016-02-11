@@ -75,8 +75,7 @@
                        top: 300,
                        fill: 'green',
                        radius: 300,
-                       selectable: true,
-                       action: 'button'
+                       selectable: true
                      }); 
                     
                     overlay.fabricCanvas().add(circle);
@@ -113,7 +112,52 @@
                            }
                         }
                     })
-
+                    
+                    // add fabric circle with text
+                    
+                    var circle2 = new fabric.Circle({
+                       left: 3000,
+                       top: 245,
+                       fill: 'lightgray',
+                       radius: 330,
+                       selectable: false,
+                       action: 'button'
+                     }); 
+                    
+                    overlay.fabricCanvas().add(circle2);
+                    
+                    
+                     var text = new fabric.Text('Start\n drawing', {
+                        left: 3070, 
+                        top: 410, 
+                        fontSize: 130, 
+                        fontFamily: 'Helvetica',
+                        textAlign: 'center',       
+                        fill: 'black',
+                        selectable: false,
+                        action: 'button'
+                        
+                        });
+                    overlay.fabricCanvas().add(text);
+                    
+                   
+                    
+                    overlay.fabricCanvas().freeDrawingBrush.color='red';
+                    overlay.fabricCanvas().freeDrawingBrush.width=30;
+                    
+                     // start freedrawing mode
+                   
+                    overlay.fabricCanvas().on('mouse:down', function (options) {
+                    
+                        if (options.target&&(options.target.action=='button')) {          
+                            self.viewer.setMouseNavEnabled(false);
+                            self.viewer.outerTracker.setTracking(false);
+                            circle2.set('fill','lightgreen');
+                            overlay.fabricCanvas().isDrawingMode=true;                             
+                        }
+                    });
+                    
+           
                     
                     $(window).resize(function() {
                         overlay.resize();
