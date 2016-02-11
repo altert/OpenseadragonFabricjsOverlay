@@ -52,8 +52,11 @@
                         }]
                     });
 
+                    // initialize overlay
+                    
                     var overlay = this.viewer.fabricjsOverlay();
 
+                    // add fabric rectangle
                     
                     var rect = new fabric.Rect({
                       left: 0,
@@ -62,14 +65,55 @@
                       width: 1000,
                       height: 1000
                     }); 
-                   
+                    
                     overlay.fabricCanvas().add(rect);
                     
-                    overlay.fabricCanvas().on('mouse:down', function (options) {
-                        if (options.target) {
-                            console.log('click');
-                        }
+                    // add fabric circle
+                    
+                    var circle = new fabric.Circle({
+                       left: 6000,
+                       top: 300,
+                       fill: 'green',
+                       radius: 300,
+                       selectable: true,
+                       action: 'button'
+                     }); 
+                    
+                    overlay.fabricCanvas().add(circle);
+                   
+                    // create circle falling animation                   
+                   
+                    circle.animate('top', '+=8400', {
+                      onChange: overlay.fabricCanvas().renderAll.bind(overlay.fabricCanvas()),
+                      duration: 2000,
+                      easing: fabric.util.ease.easeOutBounce
                     });
+                    circle.animate('scaleY', '-=.1', {
+                      onChange: overlay.fabricCanvas().renderAll.bind(overlay.fabricCanvas()),
+                      duration: 1000,
+                          
+                    });        
+                    
+                    // animate circle on mouse release (try to drag circle up)
+                    
+                    overlay.fabricCanvas().on('mouse:up', function (options) {
+                        if (options.target&&(options.target.action=='button')) {
+                           delta=9300-2*(options.target.radius*options.target.scaleY)-options.target.top;
+                           if (delta>0) {
+                               circle.animate('top', '+='+delta, {
+                                 onChange: overlay.fabricCanvas().renderAll.bind(overlay.fabricCanvas()),
+                                 duration: 2000,
+                                 easing: fabric.util.ease.easeOutBounce  
+                               }); 
+                               circle.animate('scaleY', '-=.1', {
+                                 onChange: overlay.fabricCanvas().renderAll.bind(overlay.fabricCanvas()),
+                                 duration: 1000,      
+                               });
+                               
+                           }
+                        }
+                    })
+
                     
                     $(window).resize(function() {
                         overlay.resize();
