@@ -13,5 +13,5 @@ To add fabricjs overlay capability to your OpenSeadragon Viewer, call `fabricjsO
 * `fabricCanvas()`: Returns fabricjs canvas that you can add elements to
 * `resize()`: If your viewer changes size, you'll need to resize the fabricjs overlay by calling this method.
 
-See [online demo](http://altert.github.io/openseadragonfabricjsoverlay/demo.html) or demo.html for an example of it in use. 
+See [online demo](http://altert.github.io/OpenseadragonFabricjsOverlay/demo.html) or demo.html for an example of it in use. 
 
