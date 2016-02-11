@@ -75,7 +75,8 @@
                        top: 300,
                        fill: 'green',
                        radius: 300,
-                       selectable: true
+                       selectable: true,
+                       action: 'gravity'
                      }); 
                     
                     overlay.fabricCanvas().add(circle);
@@ -96,7 +97,7 @@
                     // animate circle on mouse release (try to drag circle up)
                     
                     overlay.fabricCanvas().on('mouse:up', function (options) {
-                        if (options.target&&(options.target.action=='button')) {
+                        if (options.target&&(options.target.action=='gravity')) {
                            delta=9300-2*(options.target.radius*options.target.scaleY)-options.target.top;
                            if (delta>0) {
                                circle.animate('top', '+='+delta, {
