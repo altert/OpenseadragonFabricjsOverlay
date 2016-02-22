@@ -92,18 +92,29 @@
                 this._canvasdiv.setAttribute('height', this._containerHeight);
                 this._canvas.setAttribute('height', this._containerHeight);
             }
+            this._viewportOrigin = new OpenSeadragon.Point(0, 0);
+            var boundsRect = this._viewer.viewport.getBounds(true);
+            this._viewportOrigin.x = boundsRect.x;
+            this._viewportOrigin.y = boundsRect.y * this.imgAspectRatio;
+            
+            this._viewportWidth = boundsRect.width;
+            this._viewportHeight = boundsRect.height * this.imgAspectRatio;
+            this.imgWidth = this._viewer.viewport.contentSize.x;
+            this.imgHeight = this._viewer.viewport.contentSize.y;
+            this.imgAspectRatio = this.imgWidth / this.imgHeight;
 
         },
        resizecanvas: function() {
+                  
            var viewportZoom = this._viewer.viewport.getZoom(true);
            var image1 = this._viewer.world.getItemAt(0);
-           var zoom = image1.viewportToImageZoom(viewportZoom);
-           var origin = new OpenSeadragon.Point(0, 0);     
-           var image1WindowPoint = image1.imageToWindowCoordinates(origin);        
-           var x=Math.round(image1WindowPoint.x);
-           var y=Math.round(image1WindowPoint.y);
-           this._fabricCanvas.setZoom(zoom);
+           var zoom = image1.viewportToImageZoom(viewportZoom);     
+                   
+           var x=((this._viewportOrigin.x/this.imgWidth-this._viewportOrigin.x )/this._viewportWidth)*this._containerWidth;
+           var y=((this._viewportOrigin.y/this.imgHeight-this._viewportOrigin.y )/this._viewportHeight)*this._containerHeight;
+           
            this._fabricCanvas.absolutePan(new fabric.Point(-x,-y));
+           this._fabricCanvas.setZoom(zoom);
        }
         
     };
