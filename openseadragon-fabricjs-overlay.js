@@ -110,7 +110,9 @@
            var y=Math.round(image1WindowPoint.y);
            var canvasOffset=this._canvasdiv.getBoundingClientRect();
            
-           this._fabricCanvas.absolutePan(new fabric.Point(canvasOffset.left-x,canvasOffset.top-y));
+           var pageScroll = OpenSeadragon.getPageScroll();
+           
+           this._fabricCanvas.absolutePan(new fabric.Point(canvasOffset.left - x + pageScroll.x, canvasOffset.top - y + pageScroll.y));
            
        }
         
