@@ -15,3 +15,6 @@ To add fabricjs overlay capability to your OpenSeadragon Viewer, call `fabricjsO
 
 See [online demo](http://altert.github.io/OpenseadragonFabricjsOverlay/demo.html) or demo.html for an example of it in use. 
 
+## Thanks
+
+support for multiple overlays commissioned by [qikkeronline](http://www.qikkeronline.nl) - thanks for supporting open source

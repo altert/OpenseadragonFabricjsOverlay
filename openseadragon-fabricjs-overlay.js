@@ -10,18 +10,23 @@
 
     // ----------
     OpenSeadragon.Viewer.prototype.fabricjsOverlay = function() {
-        if (this._fabricjsOverlayInfo) {
-            return this._fabricjsOverlayInfo;
-        }
+     
 
         this._fabricjsOverlayInfo = new Overlay(this);
         return this._fabricjsOverlayInfo;
     };
-
+    // static counter for multiple overlays differentiation
+    var counter = (function () {
+        var i = 1;
+    
+        return function () {
+            return i++;
+        }
+    })();
     // ----------
     var Overlay = function(viewer) {
         var self = this;
-
+        
         this._viewer = viewer;
 
         this._containerWidth = 0;
@@ -36,10 +41,12 @@
         this._viewer.canvas.appendChild(this._canvasdiv);
 
         this._canvas = document.createElement('canvas');
-        this._canvas.setAttribute('id', 'osd-overlaycanvas');
+        
+        this._id='osd-overlaycanvas-'+counter();
+        this._canvas.setAttribute('id', this._id);
         this._canvasdiv.appendChild(this._canvas);
         this.resize();
-        this._fabricCanvas=new fabric.Canvas('osd-overlaycanvas');
+        this._fabricCanvas=new fabric.Canvas(this._id);
         // disable fabric selection because default click is tracked by OSD
         this._fabricCanvas.selection=false; 
         // prevent OSD click elements on fabric objects

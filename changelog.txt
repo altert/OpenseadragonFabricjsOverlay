@@ -1,6 +1,10 @@
-OPENSEADRAGON CANVAS OVERLAY CHANGELOG
+OPENSEADRAGON FABRICJS OVERLAY CHANGELOG
 ======================================
 
+
+0.1.0:
+
+* Multiple overlays support
 
 0.0.1:
 
