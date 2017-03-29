@@ -46,7 +46,7 @@
         this._canvas.setAttribute('id', this._id);
         this._canvasdiv.appendChild(this._canvas);
         this.resize();
-        this._fabricCanvas=new fabric.Canvas(this._id);
+        this._fabricCanvas=new fabric.Canvas(this._canvas);
         // disable fabric selection because default click is tracked by OSD
         this._fabricCanvas.selection=false; 
         // prevent OSD click elements on fabric objects
