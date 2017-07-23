@@ -4,10 +4,10 @@
         <title>OpenSeadragon Fabricjs Overlay Demo</title>
         <script src="openseadragon/openseadragon.js"></script>
         <script src="openseadragon-fabricjs-overlay.js"></script>
-     
-        
+
+
         <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
-        <script src="fabricjs/fabricjs.min.js"></script>
+        <script src="fabric/fabric.min.js"></script>
         <style type="text/css">
 
             html,
@@ -53,23 +53,23 @@
                     });
 
                     // initialize overlay
-                    
+
                     var overlay = this.viewer.fabricjsOverlay();
 
                     // add fabric rectangle
-                    
+
                     var rect = new fabric.Rect({
                       left: 0,
                       top: 0,
                       fill: 'red',
                       width: 1000,
                       height: 1000
-                    }); 
-                    
+                    });
+
                     overlay.fabricCanvas().add(rect);
-                    
+
                     // add fabric circle
-                    
+
                     var circle = new fabric.Circle({
                        left: 6000,
                        top: 300,
@@ -77,12 +77,12 @@
                        radius: 300,
                        selectable: true,
                        action: 'gravity'
-                     }); 
-                    
+                     });
+
                     overlay.fabricCanvas().add(circle);
-                   
-                    // create circle falling animation                   
-                   
+
+                    // create circle falling animation
+
                     circle.animate('top', '+=8400', {
                       onChange: overlay.fabricCanvas().renderAll.bind(overlay.fabricCanvas()),
                       duration: 2000,
@@ -91,11 +91,11 @@
                     circle.animate('scaleY', '-=.1', {
                       onChange: overlay.fabricCanvas().renderAll.bind(overlay.fabricCanvas()),
                       duration: 1000,
-                          
-                    });        
-                    
+
+                    });
+
                     // animate circle on mouse release (try to drag circle up)
-                    
+
                     overlay.fabricCanvas().on('mouse:up', function (options) {
                         if (options.target&&(options.target.action=='gravity')) {
                            delta=9300-2*(options.target.radius*options.target.scaleY)-options.target.top;
@@ -103,19 +103,19 @@
                                circle.animate('top', '+='+delta, {
                                  onChange: overlay.fabricCanvas().renderAll.bind(overlay.fabricCanvas()),
                                  duration: 2000,
-                                 easing: fabric.util.ease.easeOutBounce  
-                               }); 
+                                 easing: fabric.util.ease.easeOutBounce
+                               });
                                circle.animate('scaleY', '-=.1', {
                                  onChange: overlay.fabricCanvas().renderAll.bind(overlay.fabricCanvas()),
-                                 duration: 1000,      
+                                 duration: 1000,
                                });
-                               
+
                            }
                         }
                     })
-                    
+
                     // add fabric circle with text
-                    
+
                     var circle2 = new fabric.Circle({
                        left: 3000,
                        top: 245,
@@ -123,43 +123,43 @@
                        radius: 330,
                        selectable: false,
                        action: 'button'
-                     }); 
-                    
+                     });
+
                     overlay.fabricCanvas().add(circle2);
-                    
-                    
+
+
                      var text = new fabric.Text('Start\n drawing', {
-                        left: 3070, 
-                        top: 410, 
-                        fontSize: 130, 
+                        left: 3070,
+                        top: 410,
+                        fontSize: 130,
                         fontFamily: 'Helvetica',
-                        textAlign: 'center',       
+                        textAlign: 'center',
                         fill: 'black',
                         selectable: false,
                         action: 'button'
-                        
+
                         });
                     overlay.fabricCanvas().add(text);
-                    
-                   
-                    
+
+
+
                     overlay.fabricCanvas().freeDrawingBrush.color='red';
                     overlay.fabricCanvas().freeDrawingBrush.width=30;
-                    
+
                      // start freedrawing mode
-                   
+
                     overlay.fabricCanvas().on('mouse:down', function (options) {
-                    
-                        if (options.target&&(options.target.action=='button')) {          
+
+                        if (options.target&&(options.target.action=='button')) {
                             self.viewer.setMouseNavEnabled(false);
                             self.viewer.outerTracker.setTracking(false);
                             circle2.set('fill','lightgreen');
-                            overlay.fabricCanvas().isDrawingMode=true;                             
+                            overlay.fabricCanvas().isDrawingMode=true;
                         }
                     });
-                    
-           
-                    
+
+
+
                     $(window).resize(function() {
                         overlay.resize();
                         overlay.resizecanvas();
