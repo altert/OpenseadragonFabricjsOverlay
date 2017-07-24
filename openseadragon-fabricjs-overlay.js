@@ -10,14 +10,19 @@
 
     // ----------
     OpenSeadragon.Viewer.prototype.fabricjsOverlay = function() {
-        if (this._fabricjsOverlayInfo) {
-            return this._fabricjsOverlayInfo;
-        }
+
 
         this._fabricjsOverlayInfo = new Overlay(this);
         return this._fabricjsOverlayInfo;
     };
+    // static counter for multiple overlays differentiation
+    var counter = (function () {
+        var i = 1;
 
+        return function () {
+            return i++;
+        }
+    })();
     // ----------
     var Overlay = function(viewer) {
         var self = this;
@@ -36,22 +41,28 @@
         this._viewer.canvas.appendChild(this._canvasdiv);
 
         this._canvas = document.createElement('canvas');
-        this._canvas.setAttribute('id', 'osd-overlaycanvas');
+
+        this._id='osd-overlaycanvas-'+counter();
+        this._canvas.setAttribute('id', this._id);
         this._canvasdiv.appendChild(this._canvas);
         this.resize();
-        this._fabricCanvas=new fabric.Canvas('osd-overlaycanvas');
+        this._fabricCanvas=new fabric.Canvas(this._canvas);
         // disable fabric selection because default click is tracked by OSD
-        this._fabricCanvas.selection=false; 
+        this._fabricCanvas.selection=false;
         // prevent OSD click elements on fabric objects
         this._fabricCanvas.on('mouse:down', function (options) {
             if (options.target) {
+
+                options.e.preventDefaultAction = true;
                 options.e.preventDefault();
                 options.e.stopPropagation();
             }
         });
-        
-    
-        
+
+
+
+
+
         this._viewer.addHandler('update-viewport', function() {
             self.resize();
             self.resizecanvas();
@@ -63,7 +74,7 @@
             self.resizecanvas();
         });
 
-        this.resize();
+
     };
 
     // ----------
@@ -92,28 +103,26 @@
                 this._canvasdiv.setAttribute('height', this._containerHeight);
                 this._canvas.setAttribute('height', this._containerHeight);
             }
-            
+
         },
        resizecanvas: function() {
- 
-           var origin = new OpenSeadragon.Point(0, 0);         
+
+           var origin = new OpenSeadragon.Point(0, 0);
            var viewportZoom = this._viewer.viewport.getZoom(true);
-           var image1 = this._viewer.world.getItemAt(0);
-           var zoom = image1.viewportToImageZoom(viewportZoom);     
-                   
            this._fabricCanvas.setWidth(this._containerWidth);
-           this._fabricCanvas.setHeight(this._containerHeight);        
-           this._fabricCanvas.setZoom(zoom);
-                
-           var image1WindowPoint = image1.imageToWindowCoordinates(origin);        
-           var x=Math.round(image1WindowPoint.x);
-           var y=Math.round(image1WindowPoint.y);
+           this._fabricCanvas.setHeight(this._containerHeight);
+           this._fabricCanvas.setZoom(viewportZoom);
+           var viewportWindowPoint = this._viewer.viewport.viewportToWindowCoordinates(origin);
+           var x=Math.round(viewportWindowPoint.x);
+           var y=Math.round(viewportWindowPoint.y);
            var canvasOffset=this._canvasdiv.getBoundingClientRect();
-           
-           this._fabricCanvas.absolutePan(new fabric.Point(canvasOffset.left-x,canvasOffset.top-y));
-           
+
+           var pageScroll = OpenSeadragon.getPageScroll();
+
+           this._fabricCanvas.absolutePan(new fabric.Point(canvasOffset.left - x + pageScroll.x, canvasOffset.top - y + pageScroll.y));
+
        }
-        
+
     };
 
 })();
