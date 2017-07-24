@@ -2,6 +2,10 @@ OPENSEADRAGON FABRICJS OVERLAY CHANGELOG
 ======================================
 
 
+0.2.0:
+
+* BREAKING CHANGE: switching to Viewport coordinates from image cooridnates, that way multiple images is supported
+
 0.1.0:
 
 * Multiple overlays support

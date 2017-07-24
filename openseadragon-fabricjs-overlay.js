@@ -52,7 +52,7 @@
         // prevent OSD click elements on fabric objects
         this._fabricCanvas.on('mouse:down', function (options) {
             if (options.target) {
-              
+
                 options.e.preventDefaultAction = true;
                 options.e.preventDefault();
                 options.e.stopPropagation();
@@ -74,7 +74,7 @@
             self.resizecanvas();
         });
 
-        this.resize();
+
     };
 
     // ----------
@@ -109,16 +109,12 @@
 
            var origin = new OpenSeadragon.Point(0, 0);
            var viewportZoom = this._viewer.viewport.getZoom(true);
-           var image1 = this._viewer.world.getItemAt(0);
-           var zoom = image1.viewportToImageZoom(viewportZoom);
-
            this._fabricCanvas.setWidth(this._containerWidth);
            this._fabricCanvas.setHeight(this._containerHeight);
-           this._fabricCanvas.setZoom(zoom);
-
-           var image1WindowPoint = image1.imageToWindowCoordinates(origin);
-           var x=Math.round(image1WindowPoint.x);
-           var y=Math.round(image1WindowPoint.y);
+           this._fabricCanvas.setZoom(viewportZoom);
+           var viewportWindowPoint = this._viewer.viewport.viewportToWindowCoordinates(origin);
+           var x=Math.round(viewportWindowPoint.x);
+           var y=Math.round(viewportWindowPoint.y);
            var canvasOffset=this._canvasdiv.getBoundingClientRect();
 
            var pageScroll = OpenSeadragon.getPageScroll();
