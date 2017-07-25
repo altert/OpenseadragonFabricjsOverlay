@@ -8,11 +8,19 @@
     }
 
 
-    // ----------
-    OpenSeadragon.Viewer.prototype.fabricjsOverlay = function() {
+    /**
+     * @param {Object} options
+     *      Allows configurable properties to be entirely specified by passing
+     *      an options object to the constructor.
+     * @param {Number} options.scale
+     *      Fabric 'virtual' canvas size, for creating objects
+     **/
+    OpenSeadragon.Viewer.prototype.fabricjsOverlay = function(options) {
 
 
         this._fabricjsOverlayInfo = new Overlay(this);
+        this._fabricjsOverlayInfo._scale = options.scale;
+
         return this._fabricjsOverlayInfo;
     };
     // static counter for multiple overlays differentiation
@@ -111,7 +119,8 @@
            var viewportZoom = this._viewer.viewport.getZoom(true);
            this._fabricCanvas.setWidth(this._containerWidth);
            this._fabricCanvas.setHeight(this._containerHeight);
-           this._fabricCanvas.setZoom(viewportZoom);
+           var zoom = this._viewer.viewport._containerInnerSize.x * viewportZoom / this._scale;
+           this._fabricCanvas.setZoom(zoom);
            var viewportWindowPoint = this._viewer.viewport.viewportToWindowCoordinates(origin);
            var x=Math.round(viewportWindowPoint.x);
            var y=Math.round(viewportWindowPoint.y);
