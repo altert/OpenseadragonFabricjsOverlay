@@ -7,7 +7,7 @@
 
 
         <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
-        <script src="fabricjs/fabricjs.min.js"></script>
+        <script src="fabric/fabric.min.js"></script>
         <style type="text/css">
 
             html,
@@ -71,8 +71,10 @@
                     });
 
                     // initialize overlay
-
-                    var overlay = this.viewer.fabricjsOverlay();
+                    var options = {
+                      scale: 1000
+                    }
+                    var overlay = this.viewer.fabricjsOverlay(options);
 
                     // add fabric rectangle
 
@@ -89,7 +91,7 @@
                     // add fabric circle
 
                     var circle = new fabric.Circle({
-                       left: overlay.fabricCanvas().width*2-200,
+                       left: 1500,
                        top: 0,
                        fill: 'green',
                        radius: 100,
@@ -101,7 +103,7 @@
 
                     // create circle falling animation
 
-                    circle.animate('top', '+='+(overlay.fabricCanvas().height+530), {
+                    circle.animate('top', '+=1200', {
                       onChange: overlay.fabricCanvas().renderAll.bind(overlay.fabricCanvas()),
                       duration: 2000,
                       easing: fabric.util.ease.easeOutBounce
@@ -118,7 +120,7 @@
                         if (options.target&&(options.target.action=='gravity')) {
                            delta=overlay.fabricCanvas().height-options.target.top;
                            if (delta>0) {
-                               circle.animate('top', '+='+(delta+550), {
+                               circle.animate('top', '+='+(delta+420), {
                                  onChange: overlay.fabricCanvas().renderAll.bind(overlay.fabricCanvas()),
                                  duration: 2000,
                                  easing: fabric.util.ease.easeOutBounce
@@ -135,7 +137,7 @@
                     // add fabric circle with text
 
                     var circle2 = new fabric.Circle({
-                       left: overlay.fabricCanvas().width-60,
+                       left: 930,
                        top: 100,
                        fill: 'lightgray',
                        radius: 120,
@@ -147,7 +149,7 @@
 
 
                      var text = new fabric.Text('Start\n drawing', {
-                        left: overlay.fabricCanvas().width-40,
+                        left: 950,
                         top: 150,
                         fontSize: 50,
                         fontFamily: 'Helvetica',
