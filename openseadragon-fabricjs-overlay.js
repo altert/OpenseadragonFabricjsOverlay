@@ -61,7 +61,6 @@
         
         // prevent OSD click elements on fabric objects
         this._fabricCanvas.on('mouse:down', function (options) {
-            //console.log('ofo down', options.target);
             if (options.target) {
                 options.e.preventDefaultAction = true;
                 options.e.preventDefault();
@@ -70,7 +69,6 @@
         });
 
         this._fabricCanvas.on('mouse:up', function (options) {
-            //console.log('ofo up', options.target);
             if (options.target) {
                 options.e.preventDefaultAction = true;
                 options.e.preventDefault();
@@ -79,7 +77,6 @@
         });
 
         this._viewer.addHandler('update-viewport', function () {
-            //console.log('ofo update-viewport');
             self.resize();
             self.resizecanvas();
             self.render();
@@ -87,7 +84,6 @@
         });
 
         this._viewer.addHandler('open', function () {
-            //console.log('ofo open');
             self.resize();
             self.resizecanvas();
         });
