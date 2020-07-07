@@ -6,8 +6,8 @@
     <script src="openseadragon/openseadragon.js"></script>
     <script src="openseadragon-fabricjs-overlay.js"></script>
     <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
-    <script src="fabric/fabric.adapted.js"></script>
-    <!-- <script src="fabric/fabric.adapted.v363.js"></script> -->
+    <!-- <script src="fabric/fabric.adapted.js"></script> -->
+    <script src="fabric/fabric.adapted.v363.js"></script>
     <style type="text/css">
         html,
         body,
@@ -142,7 +142,7 @@
 
                     if (isRealValue(options.target)) {
 
-                        console.log('up', options.target)
+                        //console.log('up', options.target)
 
                         if (options.target.type === "path") {
                             btnDraw(false, overlay, circle2, text);
@@ -166,7 +166,8 @@
                         }
 
                     } else {
-                        console.log('X', options.target);
+                        //console.log('up: X', options.target);
+                        btnDraw(false, overlay, circle2, text);
                     }
 
                 })
@@ -202,12 +203,12 @@
                 overlay.fabricCanvas().on('mouse:down', function (options) {
 
                     if (isRealValue(options.target)) {
-                        console.log('down', options.target)
+                        //console.log('down', options.target)
                         if (options.target.action == 'button') {
                             btnDraw(true, overlay, circle2, text);
                         }
                     } else {
-                        console.log('X', options.target);
+                        //console.log('down: X', options.target);
                     }
 
                 });
