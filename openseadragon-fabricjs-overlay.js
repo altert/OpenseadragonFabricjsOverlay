@@ -82,6 +82,7 @@
             //console.log('ofo update-viewport');
             self.resize();
             self.resizecanvas();
+            self.render();
 
         });
 
@@ -105,6 +106,9 @@
         // ----------
         clear: function () {
             this._fabricCanvas.clearAll();
+        },
+        render: function () {
+            this._fabricCanvas.renderAll();
         },
         // ----------
         resize: function () {
