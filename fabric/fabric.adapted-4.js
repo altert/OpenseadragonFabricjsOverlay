@@ -11523,7 +11523,6 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
 
         /**
          * return an event prefix pointer or mouse.
-         * adapted
          * @private
          */
         _getEventPrefix: function () {
@@ -11531,6 +11530,7 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
         },
 
         addOrRemove: function (functor, eventjsFunctor) {
+            // adapted
             var canvasElement = this.upperCanvasEl,
                 eventTypePrefix = this._getEventPrefix();
             functor(fabric.window, 'resize', this._onResize);
