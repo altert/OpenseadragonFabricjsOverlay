@@ -1,6 +1,6 @@
 /* build: `node build.js modules=ALL exclude=gestures,accessors requirejs minifier=uglifyjs` */
 /*! Fabric.js Copyright 2008-2015, Printio (Juriy Zaytsev, Maxim Chernyak) */
-// From: https://github.com/fabricjs/fabricjs.com/blob/gh-pages/lib/fabric.js
+// Version 4.0.0-rc.1
 
 var fabric = fabric || { version: '4.0.0-rc.1' };
 if (typeof exports !== 'undefined') {
@@ -9615,7 +9615,7 @@ fabric.BaseBrush = fabric.util.createClass(/** @lends fabric.BaseBrush.prototype
         },
 
         /**
-         * Inovoked on mouse down
+         * Invoked on mouse down
          * @param {Object} pointer
          */
         onMouseDown: function (pointer, options) {
@@ -9630,7 +9630,7 @@ fabric.BaseBrush = fabric.util.createClass(/** @lends fabric.BaseBrush.prototype
         },
 
         /**
-         * Inovoked on mouse move
+         * Invoked on mouse move
          * @param {Object} pointer
          */
         onMouseMove: function (pointer, options) {
@@ -11673,6 +11673,47 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
          * @private
          */
         _initEventListeners: function () {
+            var eventMapping = {};
+            if (window.PointerEvent) {
+                // IE11 and other W3C Pointer Event implementations (see http://www.w3.org/TR/pointerevents)
+                eventMapping = {
+                    down: 'pointerdown',
+                    up: 'pointerup',
+                    enter: 'pointerenter',
+                    leave: 'pointerleave',
+                    over: 'pointerover',
+                    out: 'pointerout',
+                    move: 'pointermove'
+                };
+            } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
+                // IE10
+                eventMapping = {
+                    down: 'MSPointerDown',
+                    up: 'MSPointerUp',
+                    enter: 'MSPointerEnter',
+                    leave: 'MSPointerLeave',
+                    over: 'MSPointerOver',
+                    out: 'MSPointerOut',
+                    move: 'MSPointerMove'
+                };
+            } else {
+                // Legacy W3C mouse events
+                eventMapping = {
+                    down: 'mousedown',
+                    up: 'mouseup',
+                    enter: 'mouseover',
+                    leave: 'mouseout',
+                    over: 'mouseover',
+                    out: 'mouseout',
+                    move: 'mousemove'
+                };
+                /*if ( $.Browser.vendor === $.BROWSERS.IE && $.Browser.version < 9 ) {
+                    eventMapping.enter = 'mouseenter';
+                    eventMapping.leave = ' mouseleave';
+                }*/
+            }
+
+            fabric.eventMapping = eventMapping;
             // in case we initialized the class twice. This should not happen normally
             // but in some kind of applications where the canvas element may be changed
             // this is a workaround to having double listeners.
@@ -11683,6 +11724,7 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
 
         /**
          * return an event prefix pointer or mouse.
+         * adapted
          * @private
          */
         _getEventPrefix: function () {
@@ -11693,10 +11735,12 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
             var canvasElement = this.upperCanvasEl,
                 eventTypePrefix = this._getEventPrefix();
             functor(fabric.window, 'resize', this._onResize);
-            functor(canvasElement, eventTypePrefix + 'down', this._onMouseDown);
-            functor(canvasElement, eventTypePrefix + 'move', this._onMouseMove, addEventOptions);
-            functor(canvasElement, eventTypePrefix + 'out', this._onMouseOut);
-            functor(canvasElement, eventTypePrefix + 'enter', this._onMouseEnter);
+
+            functor(canvasElement, fabric.eventMapping.down, this._onMouseDown);
+            functor(canvasElement, fabric.eventMapping.move, this._onMouseMove, addEventOptions);
+            functor(canvasElement, fabric.eventMapping.out, this._onMouseOut);
+            functor(canvasElement, fabric.eventMapping.enter, this._onMouseEnter);
+
             functor(canvasElement, 'wheel', this._onMouseWheel);
             functor(canvasElement, 'contextmenu', this._onContextMenu);
             functor(canvasElement, 'dblclick', this._onDoubleClick);
@@ -11718,14 +11762,15 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
 
         /**
          * Removes all event listeners
+         * adapted
          */
         removeListeners: function () {
             this.addOrRemove(removeListener, 'remove');
             // if you dispose on a mouseDown, before mouse up, you need to clean document to...
             var eventTypePrefix = this._getEventPrefix();
-            removeListener(fabric.document, eventTypePrefix + 'up', this._onMouseUp);
+            removeListener(fabric.document, fabric.eventMapping.up, this._onMouseUp);
             removeListener(fabric.document, 'touchend', this._onTouchEnd, addEventOptions);
-            removeListener(fabric.document, eventTypePrefix + 'move', this._onMouseMove, addEventOptions);
+            removeListener(fabric.document, fabric.eventMapping.move, this._onMouseMove, addEventOptions);
             removeListener(fabric.document, 'touchmove', this._onMouseMove, addEventOptions);
         },
 
@@ -11789,17 +11834,18 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
         /**
          * @private
          * @param {Event} e Event object fired on mousedown
+         * adapted
          */
         _onMouseOut: function (e) {
             var target = this._hoveredTarget;
             this.fire('mouse:out', { target: target, e: e });
             this._hoveredTarget = null;
-            target && target.fire('mouseout', { e: e });
+            target && target.fire(fabric.eventMapping.out, { e: e });
 
             var _this = this;
             this._hoveredTargets.forEach(function (_target) {
                 _this.fire('mouse:out', { target: target, e: e });
-                _target && target.fire('mouseout', { e: e });
+                _target && target.fire(fabric.eventMapping.out, { e: e });
             });
             this._hoveredTargets = [];
 
@@ -11953,20 +11999,22 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
         /**
          * @private
          * @param {Event} e Event object fired on mousedown
+         * adapted
          */
         _onMouseDown: function (e) {
             this.__onMouseDown(e);
             this._resetTransformEventData();
             var canvasElement = this.upperCanvasEl,
                 eventTypePrefix = this._getEventPrefix();
-            removeListener(canvasElement, eventTypePrefix + 'move', this._onMouseMove, addEventOptions);
-            addListener(fabric.document, eventTypePrefix + 'up', this._onMouseUp);
-            addListener(fabric.document, eventTypePrefix + 'move', this._onMouseMove, addEventOptions);
+            removeListener(canvasElement, fabric.eventMapping.move, this._onMouseMove, addEventOptions);
+            addListener(fabric.document, fabric.eventMapping.up, this._onMouseUp);
+            addListener(fabric.document, fabric.eventMapping.move, this._onMouseMove, addEventOptions);
         },
 
         /**
          * @private
          * @param {Event} e Event object fired on mousedown
+         * adapted
          */
         _onTouchEnd: function (e) {
             if (e.touches.length > 0) {
@@ -11986,7 +12034,7 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
             this._willAddMouseDown = setTimeout(function () {
                 // Wait 400ms before rebinding mousedown to prevent double triggers
                 // from touch devices
-                addListener(_this.upperCanvasEl, eventTypePrefix + 'down', _this._onMouseDown);
+                addListener(_this.upperCanvasEl, fabric.eventMapping.down, _this._onMouseDown);
                 _this._willAddMouseDown = 0;
             }, 400);
         },
@@ -11994,6 +12042,7 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
         /**
          * @private
          * @param {Event} e Event object fired on mouseup
+         * adapted
          */
         _onMouseUp: function (e) {
             this.__onMouseUp(e);
@@ -12001,9 +12050,9 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
             var canvasElement = this.upperCanvasEl,
                 eventTypePrefix = this._getEventPrefix();
             if (this._isMainEvent(e)) {
-                removeListener(fabric.document, eventTypePrefix + 'up', this._onMouseUp);
-                removeListener(fabric.document, eventTypePrefix + 'move', this._onMouseMove, addEventOptions);
-                addListener(canvasElement, eventTypePrefix + 'move', this._onMouseMove, addEventOptions);
+                removeListener(fabric.document, fabric.eventMapping.up, this._onMouseUp);
+                removeListener(fabric.document, fabric.eventMapping.move, this._onMouseMove, addEventOptions);
+                addListener(canvasElement, fabric.eventMapping.move, this._onMouseMove, addEventOptions);
             }
         },
 
@@ -12464,6 +12513,7 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
          * @param {Fabric.Object} target the target where the target from the mousemove event
          * @param {Event} e Event object fired on mousemove
          * @private
+         * adapted
          */
         _fireOverOutEvents: function (target, e) {
             var _hoveredTarget = this._hoveredTarget,
@@ -12472,7 +12522,7 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
 
             this.fireSyntheticInOutEvents(target, e, {
                 oldTarget: _hoveredTarget,
-                evtOut: 'mouseout',
+                evtOut: fabric.eventMapping.out,
                 canvasEvtOut: 'mouse:out',
                 evtIn: 'mouseover',
                 canvasEvtIn: 'mouse:over',
@@ -12480,7 +12530,7 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
             for (var i = 0; i < length; i++) {
                 this.fireSyntheticInOutEvents(targets[i], e, {
                     oldTarget: _hoveredTargets[i],
-                    evtOut: 'mouseout',
+                    evtOut: fabric.eventMapping.out,
                     evtIn: 'mouseover',
                 });
             }
@@ -28272,6 +28322,7 @@ fabric.Image.filters.BaseFilter.fromObject = function (object, callback) {
 })();
 
 
+// adapted
 fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.prototype */ {
     /**
      * Initializes "dbclick" event handler
@@ -28286,7 +28337,8 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
 
         this.__lastPointer = {};
 
-        this.on('mousedown', this.onMouseDown);
+        this.on(fabric.eventMapping.down, this.onMouseDown);
+
     },
 
     /**
@@ -28407,9 +28459,10 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
 
     /**
      * Initializes "mousedown" event handler
+     * adapted
      */
     initMousedownHandler: function () {
-        this.on('mousedown', this._mouseDownHandler);
+        this.on(fabric.eventMapping.down, this._mouseDownHandler);
         this.on('mousedown:before', this._mouseDownHandlerBefore);
     },
 
@@ -28417,7 +28470,7 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
      * Initializes "mouseup" event handler
      */
     initMouseupHandler: function () {
-        this.on('mouseup', this.mouseUpHandler);
+        this.on(fabric.eventMapping.up, this.mouseUpHandler);
     },
 
     /**
