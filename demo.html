@@ -138,14 +138,9 @@
 
                 }
 
-                overlay.fabricCanvas().on('path:created', function(e) {
-                    console.log("path:created", e)
-                });
-
                 overlay.fabricCanvas().on('mouse:up', function (event) {
 
                     if (isRealValue(event.target)) {
-                        //console.log('up', event.target)
 
                         if (event.target.type === "path") {
                             btnDraw(false, overlay, circle2, text);
@@ -169,7 +164,6 @@
                         }
 
                     } else {
-                        //console.log('up: X', event.target);
                         btnDraw(false, overlay, circle2, text);
                     }
 
@@ -205,12 +199,9 @@
                 // start free-drawing mode
                 overlay.fabricCanvas().on('mouse:down', function (event) {
                     if (isRealValue(event.target)) {
-                        //console.log('down', event.target)
                         if (event.target.action === 'button') {
                             btnDraw(true, overlay, circle2, text);
                         }
-                    } else {
-                        //console.log('down: X', event.target);
                     }
 
                 });
