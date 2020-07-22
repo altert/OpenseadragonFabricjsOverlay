@@ -1,6 +1,6 @@
 /* build: `node build.js modules=ALL exclude=gestures,accessors requirejs minifier=uglifyjs` */
 /*! Fabric.js Copyright 2008-2015, Printio (Juriy Zaytsev, Maxim Chernyak) */
-// From: https://github.com/fabricjs/fabricjs.com/blob/gh-pages/lib/fabric.js
+// Version 4.0.0-rc.1
 
 var fabric = fabric || { version: '4.0.0-rc.1' };
 if (typeof exports !== 'undefined') {
