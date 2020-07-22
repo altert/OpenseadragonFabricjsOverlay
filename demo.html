@@ -109,23 +109,70 @@
 
                 });
 
-                // animate circle on mouse release (try to drag circle up)
-                overlay.fabricCanvas().on('mouse:up', function (options) {
-                    if (options.target && (options.target.action == 'gravity')) {
-                        delta = overlay.fabricCanvas().height - options.target.top;
-                        if (delta > 0) {
-                            circle.animate('top', '+=' + (delta + 420), {
-                                onChange: overlay.fabricCanvas().renderAll.bind(overlay.fabricCanvas()),
-                                duration: 2000,
-                                easing: fabric.util.ease.easeOutBounce
-                            });
-                            circle.animate('scaleY', '-=.1', {
-                                onChange: overlay.fabricCanvas().renderAll.bind(overlay.fabricCanvas()),
-                                duration: 1000,
-                            });
+                function isRealValue(obj) {
+                    return obj && obj !== 'null' && obj !== 'undefined';
+                }
 
-                        }
+                /**
+                 * Toggle button on and off
+                 */
+                function btnDraw(flag, over, shape, txt) {
+                    if (flag) {
+                        self.viewer.setMouseNavEnabled(false);
+                        self.viewer.outerTracker.setTracking(false);
+                        shape.set('fill', 'lightgreen');
+                        over.fabricCanvas().isDrawingMode = true;
+                        txt.text = 'Draw';
+                        txt.left = 990;
+                        over.fabricCanvas().add(txt);
+                    } else {
+                        self.viewer.setMouseNavEnabled(true);
+                        self.viewer.outerTracker.setTracking(true);
+                        shape.set('fill', 'lightgray');
+                        over.fabricCanvas().add(shape);
+                        over.fabricCanvas().isDrawingMode = false;
+                        txt.text = 'Start\n drawing';
+                        txt.left = 950;
+                        over.fabricCanvas().add(txt);
                     }
+
+                }
+
+                overlay.fabricCanvas().on('path:created', function(e) {
+                    console.log("path:created", e)
+                });
+
+                overlay.fabricCanvas().on('mouse:up', function (event) {
+
+                    if (isRealValue(event.target)) {
+                        //console.log('up', event.target)
+
+                        if (event.target.type === "path") {
+                            btnDraw(false, overlay, circle2, text);
+                        }
+
+                        // animate circle on mouse release (try to drag circle up)
+                        if (event.target.action === 'gravity') {
+                            delta = overlay.fabricCanvas().height - event.target.top;
+                            if (delta > 0) {
+                                circle.animate('top', '+=' + (delta + 420), {
+                                    onChange: overlay.fabricCanvas().renderAll.bind(overlay.fabricCanvas()),
+                                    duration: 2000,
+                                    easing: fabric.util.ease.easeOutBounce
+                                });
+                                circle.animate('scaleY', '-=.1', {
+                                    onChange: overlay.fabricCanvas().renderAll.bind(overlay.fabricCanvas()),
+                                    duration: 1000,
+                                });
+
+                            }
+                        }
+
+                    } else {
+                        //console.log('up: X', event.target);
+                        btnDraw(false, overlay, circle2, text);
+                    }
+
                 })
 
                 // add fabric circle with text
@@ -155,15 +202,17 @@
                 overlay.fabricCanvas().freeDrawingBrush.color = 'red';
                 overlay.fabricCanvas().freeDrawingBrush.width = 30;
 
-                // start freedrawing mode
-                overlay.fabricCanvas().on('mouse:down', function (options) {
-
-                    if (options.target && (options.target.action == 'button')) {
-                        self.viewer.setMouseNavEnabled(false);
-                        self.viewer.outerTracker.setTracking(false);
-                        circle2.set('fill', 'lightgreen');
-                        overlay.fabricCanvas().isDrawingMode = true;
+                // start free-drawing mode
+                overlay.fabricCanvas().on('mouse:down', function (event) {
+                    if (isRealValue(event.target)) {
+                        //console.log('down', event.target)
+                        if (event.target.action === 'button') {
+                            btnDraw(true, overlay, circle2, text);
+                        }
+                    } else {
+                        //console.log('down: X', event.target);
                     }
+
                 });
 
                 $(window).resize(function () {
