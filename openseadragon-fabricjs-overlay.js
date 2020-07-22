@@ -1,5 +1,4 @@
 // OpenSeadragon canvas Overlay plugin 0.0.2 based on svg overlay plugin
-// Based on fabric.js v3.6.3
 
 (function () {
 
@@ -59,7 +58,7 @@
 
         // disable fabric selection because default click is tracked by OSD
         this._fabricCanvas.selection = false;
-
+        
         // prevent OSD click elements on fabric objects
         this._fabricCanvas.on('mouse:down', function (options) {
             if (options.target) {
