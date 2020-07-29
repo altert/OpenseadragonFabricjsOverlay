@@ -117,7 +117,7 @@
             self.resize();
             self.resizeCanvas();
         });
-        window.addEventListener('resize', function (event) {
+        window.addEventListener('resize', function () {
             self.resize();
             self.resizeCanvas();
         });
