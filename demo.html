@@ -69,13 +69,13 @@
                     }]
                 });
 
-                // initialize overlay
+                // Initialize overlay
                 var options = {
                     scale: 1000
                 }
                 var overlay = this.viewer.fabricjsOverlay(options);
 
-                // add fabric rectangle
+                // Add fabric rectangle
                 var rect = new fabric.Rect({
                     left: 0,
                     top: 0,
@@ -85,7 +85,7 @@
                 });
                 overlay.fabricCanvas().add(rect);
 
-                // add fabric circle
+                // Add fabric circle
                 var circle = new fabric.Circle({
                     left: 1500,
                     top: 0,
@@ -96,7 +96,7 @@
                 });
                 overlay.fabricCanvas().add(circle);
 
-                // create circle falling animation
+                // Create circle falling animation
                 circle.animate('top', '+=1200', {
                     onChange: overlay.fabricCanvas().renderAll.bind(overlay.fabricCanvas()),
                     duration: 2000,
@@ -109,6 +109,7 @@
 
                 });
 
+                // Check value
                 function isRealValue(obj) {
                     return obj && obj !== 'null' && obj !== 'undefined';
                 }
@@ -118,19 +119,29 @@
                  */
                 function btnDraw(flag, over, shape, txt) {
                     if (flag) {
+                        // Disable OSD mousevents
                         self.viewer.setMouseNavEnabled(false);
                         self.viewer.outerTracker.setTracking(false);
-                        shape.set('fill', 'lightgreen');
+                        
+                        // Activate fabric freedrawing mode
                         over.fabricCanvas().isDrawingMode = true;
+                        
+                        // Button
+                        shape.set('fill', 'lightgreen');
                         txt.text = 'Draw';
                         txt.left = 990;
                         over.fabricCanvas().add(txt);
                     } else {
+                        // Add tracking back to OSD
                         self.viewer.setMouseNavEnabled(true);
                         self.viewer.outerTracker.setTracking(true);
+
+                        // Disable freedrawing mode
+                        over.fabricCanvas().isDrawingMode = false;
+                        
+                        // Button
                         shape.set('fill', 'lightgray');
                         over.fabricCanvas().add(shape);
-                        over.fabricCanvas().isDrawingMode = false;
                         txt.text = 'Start\n drawing';
                         txt.left = 950;
                         over.fabricCanvas().add(txt);
@@ -146,7 +157,7 @@
                             btnDraw(false, overlay, circle2, text);
                         }
 
-                        // animate circle on mouse release (try to drag circle up)
+                        // Animate circle on mouse release (try to drag circle up)
                         if (event.target.action === 'gravity') {
                             delta = overlay.fabricCanvas().height - event.target.top;
                             if (delta > 0) {
@@ -169,7 +180,7 @@
 
                 })
 
-                // add fabric circle with text
+                // Add fabric circle with text
                 var circle2 = new fabric.Circle({
                     left: 930,
                     top: 100,
@@ -196,7 +207,7 @@
                 overlay.fabricCanvas().freeDrawingBrush.color = 'red';
                 overlay.fabricCanvas().freeDrawingBrush.width = 30;
 
-                // start free-drawing mode
+                // Start free-drawing mode
                 overlay.fabricCanvas().on('mouse:down', function (event) {
                     if (isRealValue(event.target)) {
                         if (event.target.action === 'button') {
