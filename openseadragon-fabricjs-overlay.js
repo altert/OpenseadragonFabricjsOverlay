@@ -117,6 +117,10 @@
             self.resize();
             self.resizeCanvas();
         });
+        window.addEventListener('resize', function (event) {
+            self.resize();
+            self.resizeCanvas();
+        });
 
     };
 
