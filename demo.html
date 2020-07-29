@@ -118,27 +118,25 @@
                  * Toggle button on and off
                  */
                 function btnDraw(flag, over, shape, txt) {
+                    // Toggle fabric canvas draw
                     if (flag) {
                         // Disable OSD mousevents
                         self.viewer.setMouseNavEnabled(false);
                         self.viewer.outerTracker.setTracking(false);
-                        
                         // Activate fabric freedrawing mode
                         over.fabricCanvas().isDrawingMode = true;
-                        
                         // Button
                         shape.set('fill', 'lightgreen');
                         txt.text = 'Draw';
                         txt.left = 990;
                         over.fabricCanvas().add(txt);
                     } else {
+                        // Stop drawing & switch back to zoom
                         // Add tracking back to OSD
                         self.viewer.setMouseNavEnabled(true);
                         self.viewer.outerTracker.setTracking(true);
-
                         // Disable freedrawing mode
                         over.fabricCanvas().isDrawingMode = false;
-                        
                         // Button
                         shape.set('fill', 'lightgray');
                         over.fabricCanvas().add(shape);
