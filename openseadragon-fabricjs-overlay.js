@@ -75,7 +75,7 @@
         this.resize();
         this._fabricCanvas = new fabric.Canvas(this._canvas);
 
-        // disable fabric selection because default click is tracked by OSD
+        // Disable fabric selection because default click is tracked by OSD
         this._fabricCanvas.selection = false;
 
         /**
@@ -111,7 +111,7 @@
         });
 
         /**
-         * Resize
+         * Resize the fabric.js overlay when the viewer or window changes size
          */
         this._viewer.addHandler('open', function () {
             self.resize();
@@ -152,8 +152,6 @@
         },
         // ----------
         resize: function () {
-            // If your viewer changes size, you'll need to resize the fabric.js overlay
-            // by calling this method.
             if (this._containerWidth !== this._viewer.container.clientWidth) {
                 this._containerWidth = this._viewer.container.clientWidth;
                 this._canvasdiv.setAttribute('width', this._containerWidth);
@@ -168,7 +166,6 @@
 
         },
         resizeCanvas: function () {
-
             let origin = new OpenSeadragon.Point(0, 0);
             let viewportZoom = this._viewer.viewport.getZoom(true);
             this._fabricCanvas.setWidth(this._containerWidth);
