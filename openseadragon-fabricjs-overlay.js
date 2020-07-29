@@ -24,7 +24,12 @@
     OpenSeadragon.Viewer.prototype.fabricjsOverlay = function (options) {
 
         this._fabricjsOverlayInfo = new Overlay(this);
-        this._fabricjsOverlayInfo._scale = options.scale; // arbitrary scale for created fabric canvas
+        if (options && options.scale) {
+            this._fabricjsOverlayInfo._scale = options.scale; // arbitrary scale for created fabric canvas
+        }
+        else {
+            this._fabricjsOverlayInfo._scale = 1000;
+        }
 
         return this._fabricjsOverlayInfo;
     };
