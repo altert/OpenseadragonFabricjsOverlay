@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test StaticCanvas</title>
+
+</head>
+
+<body>
+    <canvas id="c1" width="600" height="500" hidden></canvas>
+    <div id="c" style="width: 600px; height: 500px" hidden></div>
+
+    <script src="./openseadragon/openseadragon.min.js"></script>
+    <script src="./fabric/fabric.adapted.js"></script>
+    <script src="./openseadragon-fabricjs-overlay.js"></script>
+
+    <script>
+        (function () {
+
+            let canvas;
+            canvas = getCanvas(true);
+            // canvas = getCanvas1(); // normal fabric, sans fab-osd
+
+            canvas.add(
+                new fabric.Rect({ top: 100, left: 100, width: 50, height: 50, fill: '#f55' }),
+                new fabric.Circle({ top: 140, left: 230, radius: 75, fill: 'green' }),
+                new fabric.Triangle({ top: 300, left: 210, width: 100, height: 100, fill: 'blue' })
+            );
+
+            function animate() {
+                canvas.item(0).animate('top', canvas.item(0).get('top') === 500 ? '100' : '500', {
+                    duration: 1000,
+                    onChange: canvas.renderAll.bind(canvas),
+                    onComplete: animate
+                });
+            }
+            animate();
+
+            function getCanvas(static) {
+
+                document.getElementById("c").hidden = false;
+                document.getElementById("c1").hidden = true;
+
+                let canvas, overlay;
+                let viewer = OpenSeadragon({
+                    id: "c",
+                    prefixUrl: "//openseadragon.github.io/openseadragon/images/",
+                    tileSources: "//openseadragon.github.io/example-images/duomo/duomo.dzi"
+                });
+
+                if (static) {
+                    overlay = viewer.fabricjsOverlay({
+                        scale: 1000,
+                        static: true
+                    });
+
+                } else {
+                    overlay = viewer.fabricjsOverlay({
+                        scale: 1000,
+                        static: false
+
+                    });
+                }
+                canvas = overlay.fabricCanvas()
+                console.log('canvas', canvas);
+                console.log('overlay', overlay);
+                return canvas;
+
+            }
+
+            function getCanvas1() {
+                document.getElementById("c1").hidden = false;
+                document.getElementById("c").hidden = true;
+                let canvas = this.__canvas = new fabric.StaticCanvas('c1');
+                console.log('canvas', canvas);
+                return canvas;
+            }
+
+        })();
+    </script>
+</body>
+
+</html>
