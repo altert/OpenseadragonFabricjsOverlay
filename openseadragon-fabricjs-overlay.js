@@ -177,8 +177,9 @@
             let viewportZoom = this._viewer.viewport.getZoom(true);
             this._fabricCanvas.setWidth(this._containerWidth);
             this._fabricCanvas.setHeight(this._containerHeight);
-            let zoom = this._viewer.viewport._containerInnerSize.x * viewportZoom / this._scale;
-            this._fabricCanvas.setZoom(zoom);
+            // let zoom = this._viewer.viewport._containerInnerSize.x * viewportZoom / this._scale;
+            // this._fabricCanvas.setZoom(zoom);
+            this._fabricCanvas.setZoom(viewportZoom);
             let viewportWindowPoint = this._viewer.viewport.viewportToWindowCoordinates(origin);
             let x = Math.round(viewportWindowPoint.x);
             let y = Math.round(viewportWindowPoint.y);
