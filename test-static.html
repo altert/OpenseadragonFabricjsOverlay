@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test StaticCanvas</title>
+    <!-- http://fabricjs.com/static_canvas -->
 
 </head>
 
@@ -20,8 +21,8 @@
         (function () {
 
             let canvas;
-            canvas = getCanvas(true);
-            // canvas = getCanvas1(); // normal fabric, sans fab-osd
+            // canvas = getCanvas(false);
+            canvas = getCanvas1(false); // normal fabric, sans fab-osd
 
             canvas.add(
                 new fabric.Rect({ top: 100, left: 100, width: 50, height: 50, fill: '#f55' }),
@@ -36,9 +37,9 @@
                     onComplete: animate
                 });
             }
-            animate();
+            // animate();
 
-            function getCanvas(static) {
+            function getCanvas(_static) {
 
                 document.getElementById("c").hidden = false;
                 document.getElementById("c1").hidden = true;
@@ -50,7 +51,7 @@
                     tileSources: "//openseadragon.github.io/example-images/duomo/duomo.dzi"
                 });
 
-                if (static) {
+                if (_static) {
                     overlay = viewer.fabricjsOverlay({
                         scale: 1000,
                         static: true
@@ -70,10 +71,15 @@
 
             }
 
-            function getCanvas1() {
+            function getCanvas1(_static) {
                 document.getElementById("c1").hidden = false;
                 document.getElementById("c").hidden = true;
-                let canvas = this.__canvas = new fabric.StaticCanvas('c1');
+                let canvas;
+                if (_static) {
+                  canvas = this.__canvas = new fabric.StaticCanvas('c1');
+                } else {
+                  canvas = this.__canvas = new fabric.Canvas('c1');
+                }
                 console.log('canvas', canvas);
                 return canvas;
             }
