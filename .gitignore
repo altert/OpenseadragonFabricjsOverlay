@@ -1,1 +1,4 @@
 *.espressostorage
+.vscode/
+.DS_Store
+.idea/
