@@ -1,6 +1,6 @@
-//! openseadragon 2.3.0
-//! Built on 2017-07-14
-//! Git commit: v2.3.0-1-e4fd781
+//! openseadragon 2.4.2
+//! Built on 2020-03-05
+//! Git commit: v2.4.2-0-c450749
 //! http://openseadragon.github.io
 //! License: http://openseadragon.github.io/license/
 
@@ -90,7 +90,7 @@
 
 /**
  * @namespace OpenSeadragon
- * @version openseadragon 2.3.0
+ * @version openseadragon 2.4.2
  * @classdesc The root namespace for OpenSeadragon.  All utility methods
  * and classes are defined on or below this namespace.
  *
@@ -165,7 +165,9 @@
   * @property {Boolean} [debugMode=false]
   *     TODO: provide an in-screen panel providing event detail feedback.
   *
-  * @property {String} [debugGridColor='#437AB2']
+  * @property {String} [debugGridColor=['#437AB2', '#1B9E77', '#D95F02', '#7570B3', '#E7298A', '#66A61E', '#E6AB02', '#A6761D', '#666666']]
+  *     The colors of grids in debug mode. Each tiled image's grid uses a consecutive color.
+  *     If there are more tiled images than provided colors, the color vector is recycled.
   *
   * @property {Number} [blendTime=0]
   *     Specifies the duration of animation as higher or lower level tiles are
@@ -202,6 +204,11 @@
   *     'destination-over', 'destination-atop', 'destination-in',
   *     'destination-out', 'lighter', 'copy' or 'xor'
   *
+  * @property {Boolean} [imageSmoothingEnabled=true]
+  *     Image smoothing for canvas rendering (only if canvas is used). Note: Ignored
+  *     by some (especially older) browsers which do not support this canvas property.
+  *     This property can be changed in {@link Viewer.Drawer.setImageSmoothingEnabled}.
+  *
   * @property {String|CanvasGradient|CanvasPattern|Function} [placeholderFillStyle=null]
   *     Draws a colored rectangle behind the tile if it is not loaded yet.
   *     You can pass a CSS color value like "#FF8800".
@@ -209,6 +216,9 @@
   *
   * @property {Number} [degrees=0]
   *     Initial rotation.
+  *
+  * @property {Boolean} [flipped=false]
+  *     Initial flip state.
   *
   * @property {Number} [minZoomLevel=null]
   *
@@ -243,7 +253,7 @@
   *     The maximum ratio to allow a zoom-in to affect the highest level pixel
   *     ratio. This can be set to Infinity to allow 'infinite' zooming into the
   *     image though it is less effective visually if the HTML5 Canvas is not
-  *     availble on the viewing device.
+  *     available on the viewing device.
   *
   * @property {Number} [smoothTileEdgesMinZoom=1.1]
   *     A zoom percentage ( where 1 is 100% ) of the highest resolution level.
@@ -267,8 +277,14 @@
   *     events between different devices, causing the faster devices to slow down enough to make the zoom control
   *     more manageable.
   *
+  * @property {Number} [rotationIncrement=90]
+  *     The number of degrees to rotate right or left when the rotate buttons or keyboard shortcuts are activated.
+  *
   * @property {Number} [pixelsPerWheelLine=40]
   *     For pixel-resolution scrolling devices, the number of pixels equal to one scroll line.
+  *
+  * @property {Number} [pixelsPerArrowPress=40]
+  *     The number of pixels viewport moves when an arrow key is pressed.
   *
   * @property {Number} [visibilityRatio=0.5]
   *     The percentage ( as a number from 0 to 1 ) of the source image which
@@ -315,6 +331,8 @@
   * @property {Boolean} [gestureSettingsMouse.dblClickToZoom=false] - Zoom on double-click gesture. Note: If set to true
   *     then clickToZoom should be set to false to prevent multiple zooms.
   * @property {Boolean} [gestureSettingsMouse.pinchToZoom=false] - Zoom on pinch gesture
+  * @property {Boolean} [gestureSettingsMouse.zoomToRefPoint=true] - If zoomToRefPoint is true, the zoom is centered at the pointer position. Otherwise,
+  *     the zoom is centered at the canvas center.
   * @property {Boolean} [gestureSettingsMouse.flickEnabled=false] - Enable flick gesture
   * @property {Number} [gestureSettingsMouse.flickMinSpeed=120] - If flickEnabled is true, the minimum speed to initiate a flick gesture (pixels-per-second)
   * @property {Number} [gestureSettingsMouse.flickMomentum=0.25] - If flickEnabled is true, the momentum factor for the flick gesture
@@ -327,6 +345,8 @@
   * @property {Boolean} [gestureSettingsTouch.dblClickToZoom=true] - Zoom on double-click gesture. Note: If set to true
   *     then clickToZoom should be set to false to prevent multiple zooms.
   * @property {Boolean} [gestureSettingsTouch.pinchToZoom=true] - Zoom on pinch gesture
+  * @property {Boolean} [gestureSettingsTouch.zoomToRefPoint=true] - If zoomToRefPoint is true, the zoom is centered at the pointer position. Otherwise,
+  *     the zoom is centered at the canvas center.
   * @property {Boolean} [gestureSettingsTouch.flickEnabled=true] - Enable flick gesture
   * @property {Number} [gestureSettingsTouch.flickMinSpeed=120] - If flickEnabled is true, the minimum speed to initiate a flick gesture (pixels-per-second)
   * @property {Number} [gestureSettingsTouch.flickMomentum=0.25] - If flickEnabled is true, the momentum factor for the flick gesture
@@ -339,6 +359,8 @@
   * @property {Boolean} [gestureSettingsPen.dblClickToZoom=false] - Zoom on double-click gesture. Note: If set to true
   *     then clickToZoom should be set to false to prevent multiple zooms.
   * @property {Boolean} [gestureSettingsPen.pinchToZoom=false] - Zoom on pinch gesture
+  * @property {Boolean} [gestureSettingsPen.zoomToRefPoint=true] - If zoomToRefPoint is true, the zoom is centered at the pointer position. Otherwise,
+  *     the zoom is centered at the canvas center.
   * @property {Boolean} [gestureSettingsPen.flickEnabled=false] - Enable flick gesture
   * @property {Number} [gestureSettingsPen.flickMinSpeed=120] - If flickEnabled is true, the minimum speed to initiate a flick gesture (pixels-per-second)
   * @property {Number} [gestureSettingsPen.flickMomentum=0.25] - If flickEnabled is true, the momentum factor for the flick gesture
@@ -351,6 +373,8 @@
   * @property {Boolean} [gestureSettingsUnknown.dblClickToZoom=true] - Zoom on double-click gesture. Note: If set to true
   *     then clickToZoom should be set to false to prevent multiple zooms.
   * @property {Boolean} [gestureSettingsUnknown.pinchToZoom=true] - Zoom on pinch gesture
+  * @property {Boolean} [gestureSettingsUnknown.zoomToRefPoint=true] - If zoomToRefPoint is true, the zoom is centered at the pointer position. Otherwise,
+  *     the zoom is centered at the canvas center.
   * @property {Boolean} [gestureSettingsUnknown.flickEnabled=true] - Enable flick gesture
   * @property {Number} [gestureSettingsUnknown.flickMinSpeed=120] - If flickEnabled is true, the minimum speed to initiate a flick gesture (pixels-per-second)
   * @property {Number} [gestureSettingsUnknown.flickMomentum=0.25] - If flickEnabled is true, the momentum factor for the flick gesture
@@ -409,9 +433,21 @@
   * @property {Boolean} [navigatorRotate=true]
   *     If true, the navigator will be rotated together with the viewer.
   *
+  * @property {String} [navigatorBackground='#000']
+  *     Specifies the background color of the navigator minimap
+  *
+  * @property {Number} [navigatorOpacity=0.8]
+  *     Specifies the opacity of the navigator minimap.
+  *
+  * @property {String} [navigatorBorderColor='#555']
+  *     Specifies the border color of the navigator minimap
+  *
+  * @property {String} [navigatorDisplayRegionColor='#900']
+  *     Specifies the border color of the display region rectangle of the navigator minimap
+  *
   * @property {Number} [controlsFadeDelay=2000]
   *     The number of milliseconds to wait once the user has stopped interacting
-  *     with the interface before begining to fade the controls. Assumes
+  *     with the interface before beginning to fade the controls. Assumes
   *     showNavigationControl and autoHideControls are both true.
   *
   * @property {Number} [controlsFadeLength=1500]
@@ -429,7 +465,7 @@
   * @property {Number} [minPixelRatio=0.5]
   *     The higher the minPixelRatio, the lower the quality of the image that
   *     is considered sufficient to stop rendering a given zoom level.  For
-  *     example, if you are targeting mobile devices with less bandwith you may
+  *     example, if you are targeting mobile devices with less bandwidth you may
   *     try setting this to 1.5 or higher.
   *
   * @property {Boolean} [mouseNavEnabled=true]
@@ -470,6 +506,10 @@
   *     (e.g. viewer.drawer.canRotate()).<br>
   *     Note: {@link OpenSeadragon.Options.showNavigationControl} is overriding
   *     this setting when set to false.
+  *
+  * @property {Boolean} [showFlipControl=false]
+  *     If true then the flip controls will be displayed as part of the
+  *     standard controls.
   *
   * @property {Boolean} [showSequenceControl=true]
   *     If sequenceMode is true, then provide buttons for navigating forward and
@@ -681,6 +721,12 @@
   * @property {String} rotateright.HOVER
   * @property {String} rotateright.DOWN
   *
+  * @property {Object} flip - Images for the flip button.
+  * @property {String} flip.REST
+  * @property {String} flip.GROUP
+  * @property {String} flip.HOVER
+  * @property {String} flip.DOWN
+  *
   * @property {Object} previous - Images for the previous button.
   * @property {String} previous.REST
   * @property {String} previous.GROUP
@@ -695,14 +741,7 @@
   *
   */
 
-
- /**
-  * This function serves as a single point of instantiation for an {@link OpenSeadragon.Viewer}, including all
-  * combinations of out-of-the-box configurable features.
-  *
-  * @param {OpenSeadragon.Options} options - Viewer options.
-  * @returns {OpenSeadragon.Viewer}
-  */
+/* eslint-disable no-redeclare */
 function OpenSeadragon( options ){
     return new OpenSeadragon.Viewer( options );
 }
@@ -721,10 +760,10 @@ function OpenSeadragon( options ){
      * @since 1.0.0
      */
     $.version = {
-        versionStr: '2.3.0',
+        versionStr: '2.4.2',
         major: parseInt('2', 10),
-        minor: parseInt('3', 10),
-        revision: parseInt('0', 10)
+        minor: parseInt('4', 10),
+        revision: parseInt('2', 10)
     };
 
 
@@ -1052,6 +1091,7 @@ function OpenSeadragon( options ){
                 clickToZoom: true,
                 dblClickToZoom: false,
                 pinchToZoom: false,
+                zoomToRefPoint: true,
                 flickEnabled: false,
                 flickMinSpeed: 120,
                 flickMomentum: 0.25,
@@ -1062,6 +1102,7 @@ function OpenSeadragon( options ){
                 clickToZoom: false,
                 dblClickToZoom: true,
                 pinchToZoom: true,
+                zoomToRefPoint: true,
                 flickEnabled: true,
                 flickMinSpeed: 120,
                 flickMomentum: 0.25,
@@ -1072,6 +1113,7 @@ function OpenSeadragon( options ){
                 clickToZoom: true,
                 dblClickToZoom: false,
                 pinchToZoom: false,
+                zoomToRefPoint: true,
                 flickEnabled: false,
                 flickMinSpeed: 120,
                 flickMomentum: 0.25,
@@ -1082,6 +1124,7 @@ function OpenSeadragon( options ){
                 clickToZoom: false,
                 dblClickToZoom: true,
                 pinchToZoom: true,
+                zoomToRefPoint: true,
                 flickEnabled: true,
                 flickMinSpeed: 120,
                 flickMomentum: 0.25,
@@ -1099,9 +1142,11 @@ function OpenSeadragon( options ){
             smoothTileEdgesMinZoom: 1.1, //-> higher than maxZoomPixelRatio disables it
             iOSDevice:              isIOSDevice(),
             pixelsPerWheelLine:     40,
+            pixelsPerArrowPress:    40,
             autoResize:             true,
             preserveImageSizeOnResize: false, // requires autoResize=true
             minScrollDeltaTime:     50,
+            rotationIncrement:      90,
 
             //DEFAULT CONTROL SETTINGS
             showSequenceControl:     true,  //SEQUENCE
@@ -1115,6 +1160,7 @@ function OpenSeadragon( options ){
             showHomeControl:         true,  //HOME
             showFullPageControl:     true,  //FULL
             showRotationControl:     false, //ROTATION
+            showFlipControl:         false,  //FLIP
             controlsFadeDelay:       2000,  //ZOOM/HOME/FULL/SEQUENCE
             controlsFadeLength:      1500,  //ZOOM/HOME/FULL/SEQUENCE
             mouseNavEnabled:         true,  //GENERAL MOUSE INTERACTIVITY
@@ -1132,14 +1178,22 @@ function OpenSeadragon( options ){
             navigatorAutoResize:        true,
             navigatorAutoFade:          true,
             navigatorRotate:            true,
+            navigatorBackground:        '#000',
+            navigatorOpacity:           0.8,
+            navigatorBorderColor:       '#555',
+            navigatorDisplayRegionColor: '#900',
 
             // INITIAL ROTATION
             degrees:                    0,
+
+            // INITIAL FLIP STATE
+            flipped:                    false,
 
             // APPEARANCE
             opacity:                    1,
             preload:                    false,
             compositeOperation:         null,
+            imageSmoothingEnabled:      true,
             placeholderFillStyle:       null,
 
             //REFERENCE STRIP SETTINGS
@@ -1204,6 +1258,12 @@ function OpenSeadragon( options ){
                     HOVER:  'rotateright_hover.png',
                     DOWN:   'rotateright_pressed.png'
                 },
+                flip: { // Flip icon designed by Yaroslav Samoylov from the Noun Project and modified by Nelson Campos ncampos@criteriamarathon.com, https://thenounproject.com/term/flip/136289/
+                    REST:   'flip_rest.png',
+                    GROUP:  'flip_grouphover.png',
+                    HOVER:  'flip_hover.png',
+                    DOWN:   'flip_pressed.png'
+                },
                 previous: {
                     REST:   'previous_rest.png',
                     GROUP:  'previous_grouphover.png',
@@ -1220,7 +1280,7 @@ function OpenSeadragon( options ){
 
             //DEVELOPER SETTINGS
             debugMode:              false,
-            debugGridColor:         '#437AB2'
+            debugGridColor:         ['#437AB2', '#1B9E77', '#D95F02', '#7570B3', '#E7298A', '#66A61E', '#E6AB02', '#A6761D', '#666666']
         },
 
 
@@ -1289,7 +1349,7 @@ function OpenSeadragon( options ){
         /**
          * Determines the position of the upper-left corner of the element.
          * @function
-         * @param {Element|String} element - the elemenet we want the position for.
+         * @param {Element|String} element - the element we want the position for.
          * @returns {OpenSeadragon.Point} - the position of the upper left corner of the element.
          */
         getElementPosition: function( element ) {
@@ -1494,7 +1554,7 @@ function OpenSeadragon( options ){
          */
         getMousePosition: function( event ) {
 
-            if ( typeof( event.pageX ) == "number" ) {
+            if ( typeof ( event.pageX ) == "number" ) {
                 $.getMousePosition = function( event ){
                     var result = new $.Point();
 
@@ -1504,7 +1564,7 @@ function OpenSeadragon( options ){
 
                     return result;
                 };
-            } else if ( typeof( event.clientX ) == "number" ) {
+            } else if ( typeof ( event.clientX ) == "number" ) {
                 $.getMousePosition = function( event ){
                     var result = new $.Point();
 
@@ -1539,7 +1599,7 @@ function OpenSeadragon( options ){
             var docElement  = document.documentElement || {},
                 body        = document.body || {};
 
-            if ( typeof( window.pageXOffset ) == "number" ) {
+            if ( typeof ( window.pageXOffset ) == "number" ) {
                 $.getPageScroll = function(){
                     return new $.Point(
                         window.pageXOffset,
@@ -1628,7 +1688,7 @@ function OpenSeadragon( options ){
             var docElement = document.documentElement || {},
                 body    = document.body || {};
 
-            if ( typeof( window.innerWidth ) == 'number' ) {
+            if ( typeof ( window.innerWidth ) == 'number' ) {
                 $.getWindowSize = function(){
                     return new $.Point(
                         window.innerWidth,
@@ -2032,7 +2092,7 @@ function OpenSeadragon( options ){
         /**
          * Similar to OpenSeadragon.delegate, but it does not immediately call
          * the method on the object, returning a function which can be called
-         * repeatedly to delegate the method. It also allows additonal arguments
+         * repeatedly to delegate the method. It also allows additional arguments
          * to be passed during construction which will be added during each
          * invocation, and each invocation can add additional arguments as well.
          *
@@ -2066,7 +2126,7 @@ function OpenSeadragon( options ){
 
 
         /**
-         * Retreives the value of a url parameter from the window.location string.
+         * Retrieves the value of a url parameter from the window.location string.
          * @function
          * @param {String} key
          * @returns {String} The value of the url parameter or null if no param matches.
@@ -2202,7 +2262,7 @@ function OpenSeadragon( options ){
 
                 if (headers) {
                     for (var headerName in headers) {
-                        if (headers.hasOwnProperty(headerName) && headers[headerName]) {
+                        if (Object.prototype.hasOwnProperty.call(headers, headerName) && headers[headerName]) {
                             request.setRequestHeader(headerName, headers[headerName]);
                         }
                     }
@@ -2228,7 +2288,7 @@ function OpenSeadragon( options ){
                     error messages are localized.
                 */
                 var oldIE = $.Browser.vendor == $.BROWSERS.IE && $.Browser.version < 10;
-                if ( oldIE && typeof( e.number ) != "undefined" && e.number == -2147024891 ) {
+                if ( oldIE && typeof ( e.number ) != "undefined" && e.number == -2147024891 ) {
                     msg += "\nSee http://msdn.microsoft.com/en-us/library/ms537505(v=vs.85).aspx#xdomain";
                 }
 
@@ -2237,7 +2297,7 @@ function OpenSeadragon( options ){
                 request.onreadystatechange = function(){};
 
                 if (window.XDomainRequest) { // IE9 or IE8 might as well try to use XDomainRequest
-                    var xdr = new XDomainRequest();
+                    var xdr = new window.XDomainRequest();
                     if (xdr) {
                         xdr.onload = function (e) {
                             if ( $.isFunction( onSuccess ) ) {
@@ -2437,6 +2497,31 @@ function OpenSeadragon( options ){
     });
 
 
+    //TODO: $.console is often used inside a try/catch block which generally
+    //      prevents allowings errors to occur with detection until a debugger
+    //      is attached.  Although I've been guilty of the same anti-pattern
+    //      I eventually was convinced that errors should naturally propagate in
+    //      all but the most special cases.
+    /**
+     * A convenient alias for console when available, and a simple null
+     * function when console is unavailable.
+     * @static
+     * @private
+     */
+    var nullfunction = function( msg ){
+        //document.location.hash = msg;
+    };
+
+    $.console = window.console || {
+        log:    nullfunction,
+        debug:  nullfunction,
+        info:   nullfunction,
+        warn:   nullfunction,
+        error:  nullfunction,
+        assert: nullfunction
+    };
+
+
     /**
      * The current browser vendor, version, and related information regarding detected features.
      * @member {Object} Browser
@@ -2532,8 +2617,13 @@ function OpenSeadragon( options ){
             sep  = part.indexOf( '=' );
 
             if ( sep > 0 ) {
-                URLPARAMS[ part.substring( 0, sep ) ] =
-                    decodeURIComponent( part.substring( sep + 1 ) );
+                var key = part.substring( 0, sep ),
+                    value = part.substring( sep + 1 );
+                try {
+                    URLPARAMS[ key ] = decodeURIComponent( value );
+                } catch (e) {
+                    $.console.error( "Ignoring malformed URL parameter: %s=%s", key, value );
+                }
             }
         }
 
@@ -2555,31 +2645,6 @@ function OpenSeadragon( options ){
         );
 
     })();
-
-
-    //TODO: $.console is often used inside a try/catch block which generally
-    //      prevents allowings errors to occur with detection until a debugger
-    //      is attached.  Although I've been guilty of the same anti-pattern
-    //      I eventually was convinced that errors should naturally propogate in
-    //      all but the most special cases.
-    /**
-     * A convenient alias for console when available, and a simple null
-     * function when console is unavailable.
-     * @static
-     * @private
-     */
-    var nullfunction = function( msg ){
-            //document.location.hash = msg;
-        };
-
-    $.console = window.console || {
-        log:    nullfunction,
-        debug:  nullfunction,
-        info:   nullfunction,
-        warn:   nullfunction,
-        error:  nullfunction,
-        assert: nullfunction
-    };
 
 
     // Adding support for HTML5's requestAnimationFrame as suggested by acdha.
@@ -4279,8 +4344,9 @@ $.EventSource.prototype = {
         },
 
         /**
-         * @function Increment this pointer's contact count.
+         * Increment this pointer's contact count.
          * It will evaluate whether this pointer type is allowed to have multiple contacts.
+         * @function
          */
         addContact: function() {
             ++this.contacts;
@@ -4291,8 +4357,9 @@ $.EventSource.prototype = {
         },
 
         /**
-         * @function Decrement this pointer's contact count.
+         * Decrement this pointer's contact count.
          * It will make sure the count does not go below 0.
+         * @function
          */
         removeContact: function() {
             --this.contacts;
@@ -5538,7 +5605,7 @@ $.EventSource.prototype = {
 
         // If isPrimary is not known for the pointer then set it according to our rules:
         //    true if the first pointer in the gesture, otherwise false
-        if ( !gPoint.hasOwnProperty( 'isPrimary' ) ) {
+        if ( !Object.prototype.hasOwnProperty.call( gPoint, 'isPrimary' ) ) {
             if ( pointsList.getLength() === 0 ) {
                 gPoint.isPrimary = true;
             } else {
@@ -5574,7 +5641,7 @@ $.EventSource.prototype = {
             listLength = pointsList.removeById( gPoint.id );
 
             // If isPrimary is not known for the pointer and we just removed the primary pointer from the list then we need to set another pointer as primary
-            if ( !gPoint.hasOwnProperty( 'isPrimary' ) ) {
+            if ( !Object.prototype.hasOwnProperty.call( gPoint, 'isPrimary' ) ) {
                 primaryPoint = pointsList.getPrimary();
                 if ( !primaryPoint ) {
                     primaryPoint = pointsList.getByIndex( 0 );
@@ -5700,7 +5767,7 @@ $.EventSource.prototype = {
                     {
                         eventSource:          tracker,
                         pointerType:          curGPoint.type,
-                        position:             getPointRelativeToAbsolute( curGPoint.currentPos, tracker.element ),
+                        position:             curGPoint.currentPos && getPointRelativeToAbsolute( curGPoint.currentPos, tracker.element ),
                         buttons:              pointsList.buttons,
                         pointers:             tracker.getActivePointerCount(),
                         insideElementPressed: updateGPoint ? updateGPoint.insideElementPressed : false,
@@ -5997,10 +6064,16 @@ $.EventSource.prototype = {
             return false;
         }
 
+        // OS-specific gestures (e.g. swipe up with four fingers in iPadOS 13)
+        if (typeof gPoints[ 0 ].currentPos === "undefined") {
+            abortContacts(tracker, event, pointsList);
+
+            return false;
+        }
+
         for ( i = 0; i < gPointCount; i++ ) {
             curGPoint = gPoints[ i ];
             updateGPoint = pointsList.getById( curGPoint.id );
-
             if ( updateGPoint ) {
                 // Update the pointer, stop tracking it if not still in this element
                 if ( updateGPoint.captured ) {
@@ -6205,7 +6278,7 @@ $.EventSource.prototype = {
 
             if ( updateGPoint ) {
                 // Already tracking the pointer...update it
-                if ( curGPoint.hasOwnProperty( 'isPrimary' ) ) {
+                if ( Object.prototype.hasOwnProperty.call( curGPoint, 'isPrimary' ) ) {
                     updateGPoint.isPrimary = curGPoint.isPrimary;
                 }
                 updateGPoint.lastPos = updateGPoint.currentPos;
@@ -6382,10 +6455,12 @@ $.EventSource.prototype = {
         }
     }
 
-    // True if inside an iframe, otherwise false.
-    // @member {Boolean} isInIframe
-    // @private
-    // @inner
+    /**
+     * True if inside an iframe, otherwise false.
+     * @member {Boolean} isInIframe
+     * @private
+     * @inner
+     */
     var isInIframe = (function() {
         try {
             return window.self !== window.top;
@@ -6394,10 +6469,12 @@ $.EventSource.prototype = {
         }
     })();
 
-    // @function
-    // @private
-    // @inner
-    // @returns {Boolean} True if the target has access rights to events, otherwise false.
+    /**
+     * @function
+     * @private
+     * @inner
+     * @returns {Boolean} True if the target has access rights to events, otherwise false.
+     */
     function canAccessEvents (target) {
         try {
             return target.addEventListener && target.removeEventListener;
@@ -6577,7 +6654,7 @@ $.Control.prototype = {
     /**
      * Determines if the control is currently visible.
      * @function
-     * @return {Boolean} true if currenly visible, false otherwise.
+     * @return {Boolean} true if currently visible, false otherwise.
      */
     isVisible: function() {
         return this.wrapper.style.display != "none";
@@ -7050,7 +7127,7 @@ $.Viewer = function( options ) {
         i;
 
 
-    //backward compatibility for positional args while prefering more
+    //backward compatibility for positional args while preferring more
     //idiomatic javascript options object as the only argument
     if( !$.isPlainObject( options ) ){
         options = {
@@ -7126,6 +7203,8 @@ $.Viewer = function( options ) {
 
         //These are originally not part options but declared as members
         //in initialize.  It's still considered idiomatic to put them here
+        //source is here for backwards compatibility. It is not an official
+        //part of the API and should not be relied upon.
         source:         null,
         /**
          * Handles rendering of tiles in the viewer. Created for each TileSource opened.
@@ -7133,6 +7212,11 @@ $.Viewer = function( options ) {
          * @memberof OpenSeadragon.Viewer#
          */
         drawer:             null,
+        /**
+         * Keeps track of all of the tiled images in the scene.
+         * @member {OpenSeadragon.World} world
+         * @memberof OpenSeadragon.Viewer#
+         */
         world:              null,
         /**
          * Handles coordinate-related functionality - zoom, pan, rotation, etc. Created for each TileSource opened.
@@ -7163,10 +7247,10 @@ $.Viewer = function( options ) {
 
     }, $.DEFAULT_SETTINGS, options );
 
-    if ( typeof( this.hash) === "undefined" ) {
+    if ( typeof ( this.hash) === "undefined" ) {
         throw new Error("A hash must be defined, either by specifying options.id or options.hash.");
     }
-    if ( typeof( THIS[ this.hash ] ) !== "undefined" ) {
+    if ( typeof ( THIS[ this.hash ] ) !== "undefined" ) {
         // We don't want to throw an error here, as the user might have discarded
         // the previous viewer with the same hash and now want to recreate it.
         $.console.warn("Hash " + this.hash + " has already been used.");
@@ -7348,6 +7432,7 @@ $.Viewer = function( options ) {
         maxZoomLevel:       this.maxZoomLevel,
         viewer:             this,
         degrees:            this.degrees,
+        flipped:            this.flipped,
         navigatorRotate:    this.navigatorRotate,
         homeFillsViewer:    this.homeFillsViewer,
         margins:            this.viewportMargins
@@ -7409,6 +7494,10 @@ $.Viewer = function( options ) {
             prefixUrl:         this.prefixUrl,
             viewer:            this,
             navigatorRotate:   this.navigatorRotate,
+            background:        this.navigatorBackground,
+            opacity:           this.navigatorOpacity,
+            borderColor:       this.navigatorBorderColor,
+            displayRegionColor: this.navigatorDisplayRegionColor,
             crossOriginPolicy: this.crossOriginPolicy
         });
     }
@@ -7435,6 +7524,12 @@ $.Viewer = function( options ) {
     $.requestAnimationFrame( function(){
         beginControlsAutoHide( _this );
     } );
+
+    // Initial canvas options
+    if ( this.imageSmoothingEnabled !== undefined && !this.imageSmoothingEnabled){
+        this.drawer.setImageSmoothingEnabled(this.imageSmoothingEnabled);
+    }
+
 };
 
 $.extend( $.Viewer.prototype, $.EventSource.prototype, $.ControlDock.prototype, /** @lends OpenSeadragon.Viewer.prototype */{
@@ -7462,6 +7557,9 @@ $.extend( $.Viewer.prototype, $.EventSource.prototype, $.ControlDock.prototype, 
 
     /**
      * Open tiled images into the viewer, closing any others.
+     * To get the TiledImage instance created by open, add an event listener for
+     * {@link OpenSeadragon.Viewer.html#.event:open}, which when fired can be used to get access
+     * to the instance, i.e., viewer.world.getItemAt(0).
      * @function
      * @param {Array|String|Object|Function} tileSources - This can be a TiledImage
      * specifier, a TileSource specifier, or an array of either. A TiledImage specifier
@@ -7795,7 +7893,7 @@ $.extend( $.Viewer.prototype, $.EventSource.prototype, $.ControlDock.prototype, 
         var enabled = this.controls.length,
             i;
         for( i = 0; i < this.controls.length; i++ ){
-            enabled = enabled && this.controls[ i ].isVisibile();
+            enabled = enabled && this.controls[ i ].isVisible();
         }
         return enabled;
     },
@@ -7872,7 +7970,7 @@ $.extend( $.Viewer.prototype, $.EventSource.prototype, $.ControlDock.prototype, 
             nodes,
             i;
 
-        //dont bother modifying the DOM if we are already in full page mode.
+        //don't bother modifying the DOM if we are already in full page mode.
         if ( fullPage == this.isFullPage() ) {
             return this;
         }
@@ -7927,7 +8025,7 @@ $.extend( $.Viewer.prototype, $.EventSource.prototype, $.ControlDock.prototype, 
             bodyStyle.height = "100%";
             docStyle.height = "100%";
 
-            //when entering full screen on the ipad it wasnt sufficient to leave
+            //when entering full screen on the ipad it wasn't sufficient to leave
             //the body intact as only only the top half of the screen would
             //respond to touch events on the canvas, while the bottom half treated
             //them as touch events on the document body.  Thus we remove and store
@@ -8134,7 +8232,10 @@ $.extend( $.Viewer.prototype, $.EventSource.prototype, $.ControlDock.prototype, 
                     }
                 }
                 if ( _this.navigator && _this.viewport ) {
-                    _this.navigator.update( _this.viewport );
+                    //09/08/2018 - Fabroh : Fix issue #1504 : Ensure to get the navigator updated on fullscreen out with custom location with a timeout
+                    setTimeout(function(){
+                        _this.navigator.update( _this.viewport );
+                    });
                 }
                 /**
                  * Raised when the viewer has changed to/from full-screen mode (see {@link OpenSeadragon.Viewer#setFullScreen}).
@@ -8244,7 +8345,7 @@ $.extend( $.Viewer.prototype, $.EventSource.prototype, $.ControlDock.prototype, 
      * requests.
      * @param {Function} [options.success] A function that gets called when the image is
      * successfully added. It's passed the event object which contains a single property:
-     * "item", the resulting TiledImage.
+     * "item", which is the resulting instance of TiledImage.
      * @param {Function} [options.error] A function that gets called if the image is
      * unable to be added. It's passed the error event object, which contains "message"
      * and "source" properties.
@@ -8652,6 +8753,7 @@ $.extend( $.Viewer.prototype, $.EventSource.prototype, $.ControlDock.prototype, 
             onFullScreenHandler     = $.delegate( this, onFullScreen ),
             onRotateLeftHandler     = $.delegate( this, onRotateLeft ),
             onRotateRightHandler    = $.delegate( this, onRotateRight ),
+            onFlipHandler           = $.delegate( this, onFlip),
             onFocusHandler          = $.delegate( this, onFocus ),
             onBlurHandler           = $.delegate( this, onBlur ),
             navImages               = this.navImages,
@@ -8663,7 +8765,8 @@ $.extend( $.Viewer.prototype, $.EventSource.prototype, $.ControlDock.prototype, 
 
             if( this.zoomInButton || this.zoomOutButton ||
                 this.homeButton || this.fullPageButton ||
-                this.rotateLeftButton || this.rotateRightButton ) {
+                this.rotateLeftButton || this.rotateRightButton ||
+                this.flipButton ) {
                 //if we are binding to custom buttons then layout and
                 //grouping is the responsibility of the page author
                 useGroup = false;
@@ -8767,7 +8870,22 @@ $.extend( $.Viewer.prototype, $.EventSource.prototype, $.ControlDock.prototype, 
                     onFocus:    onFocusHandler,
                     onBlur:     onBlurHandler
                 }));
+            }
 
+            if ( this.showFlipControl ) {
+                buttons.push( this.flipButton = new $.Button({
+                    element:    this.flipButton ? $.getElement( this.flipButton ) : null,
+                    clickTimeThreshold: this.clickTimeThreshold,
+                    clickDistThreshold: this.clickDistThreshold,
+                    tooltip:    $.getString( "Tooltips.Flip" ),
+                    srcRest:    resolveUrl( this.prefixUrl, navImages.flip.REST ),
+                    srcGroup:   resolveUrl( this.prefixUrl, navImages.flip.GROUP ),
+                    srcHover:   resolveUrl( this.prefixUrl, navImages.flip.HOVER ),
+                    srcDown:    resolveUrl( this.prefixUrl, navImages.flip.DOWN ),
+                    onRelease:  onFlipHandler,
+                    onFocus:    onFocusHandler,
+                    onBlur:     onBlurHandler
+                }));
             }
 
             if ( useGroup ) {
@@ -8813,6 +8931,16 @@ $.extend( $.Viewer.prototype, $.EventSource.prototype, $.ControlDock.prototype, 
      */
     goToPage: function( page ){
         if( this.tileSources && page >= 0 && page < this.tileSources.length ){
+            this._sequenceIndex = page;
+
+            this._updateSequenceButtons( page );
+
+            this.open( this.tileSources[ page ] );
+
+            if( this.referenceStrip ){
+                this.referenceStrip.setFocus( page );
+            }
+
             /**
              * Raised when the page is changed on a viewer configured with multiple image sources (see {@link OpenSeadragon.Viewer#goToPage}).
              *
@@ -8824,16 +8952,6 @@ $.extend( $.Viewer.prototype, $.EventSource.prototype, $.ControlDock.prototype, 
              * @property {?Object} userData - Arbitrary subscriber-defined object.
              */
             this.raiseEvent( 'page', { page: page } );
-
-            this._sequenceIndex = page;
-
-            this._updateSequenceButtons( page );
-
-            this.open( this.tileSources[ page ] );
-
-            if( this.referenceStrip ){
-                this.referenceStrip.setFocus( page );
-            }
         }
 
         return this;
@@ -8846,15 +8964,15 @@ $.extend( $.Viewer.prototype, $.EventSource.prototype, $.ControlDock.prototype, 
      * is closed which include when changing page.
      * @method
      * @param {Element|String|Object} element - A reference to an element or an id for
-     *      the element which will be overlayed. Or an Object specifying the configuration for the overlay.
+     *      the element which will be overlaid. Or an Object specifying the configuration for the overlay.
      *      If using an object, see {@link OpenSeadragon.Overlay} for a list of
      *      all available options.
      * @param {OpenSeadragon.Point|OpenSeadragon.Rect} location - The point or
-     *      rectangle which will be overlayed. This is a viewport relative location.
-     * @param {OpenSeadragon.Placement} placement - The position of the
+     *      rectangle which will be overlaid. This is a viewport relative location.
+     * @param {OpenSeadragon.Placement} [placement=OpenSeadragon.Placement.TOP_LEFT] - The position of the
      *      viewport which the location coordinates will be treated as relative
      *      to.
-     * @param {function} onDraw - If supplied the callback is called when the overlay
+     * @param {function} [onDraw] - If supplied the callback is called when the overlay
      *      needs to be drawn. It it the responsibility of the callback to do any drawing/positioning.
      *      It is passed position, size and element.
      * @return {OpenSeadragon.Viewer} Chainable.
@@ -8909,10 +9027,10 @@ $.extend( $.Viewer.prototype, $.EventSource.prototype, $.ControlDock.prototype, 
      * element id moving it to the new location, relative to the new placement.
      * @method
      * @param {Element|String} element - A reference to an element or an id for
-     *      the element which is overlayed.
+     *      the element which is overlaid.
      * @param {OpenSeadragon.Point|OpenSeadragon.Rect} location - The point or
-     *      rectangle which will be overlayed. This is a viewport relative location.
-     * @param {OpenSeadragon.Placement} placement - The position of the
+     *      rectangle which will be overlaid. This is a viewport relative location.
+     * @param {OpenSeadragon.Placement} [placement=OpenSeadragon.Placement.TOP_LEFT] - The position of the
      *      viewport which the location coordinates will be treated as relative
      *      to.
      * @return {OpenSeadragon.Viewer} Chainable.
@@ -9167,6 +9285,7 @@ $.extend( $.Viewer.prototype, $.EventSource.prototype, $.ControlDock.prototype, 
                     width:       this.referenceStripWidth,
                     tileSources: this.tileSources,
                     prefixUrl:   this.prefixUrl,
+                    useCanvas:   this.useCanvas,
                     viewer:      this
                 });
 
@@ -9455,31 +9574,62 @@ function onBlur(){
 }
 
 function onCanvasKeyDown( event ) {
-    if ( !event.preventDefaultAction && !event.ctrl && !event.alt && !event.meta ) {
+    var canvasKeyDownEventArgs = {
+      originalEvent: event.originalEvent,
+      preventDefaultAction: event.preventDefaultAction,
+      preventVerticalPan: event.preventVerticalPan,
+      preventHorizontalPan: event.preventHorizontalPan
+    };
+
+    /**
+     * Raised when a keyboard key is pressed and the focus is on the {@link OpenSeadragon.Viewer#canvas} element.
+     *
+     * @event canvas-key
+     * @memberof OpenSeadragon.Viewer
+     * @type {object}
+     * @property {OpenSeadragon.Viewer} eventSource - A reference to the Viewer which raised this event.
+     * @property {Object} originalEvent - The original DOM event.
+     * @property {Boolean} preventDefaultAction - Set to true to prevent default keyboard behaviour. Default: false.
+     * @property {Boolean} preventVerticalPan - Set to true to prevent keyboard vertical panning. Default: false.
+     * @property {Boolean} preventHorizontalPan - Set to true to prevent keyboard horizontal panning. Default: false.
+     * @property {?Object} userData - Arbitrary subscriber-defined object.
+     */
+
+    this.raiseEvent('canvas-key', canvasKeyDownEventArgs);
+
+    if ( !canvasKeyDownEventArgs.preventDefaultAction && !event.ctrl && !event.alt && !event.meta ) {
         switch( event.keyCode ){
             case 38://up arrow
-                if ( event.shift ) {
+                if (!canvasKeyDownEventArgs.preventVerticalPan) {
+                  if ( event.shift ) {
                     this.viewport.zoomBy(1.1);
-                } else {
-                    this.viewport.panBy(this.viewport.deltaPointsFromPixels(new $.Point(0, -40)));
+                  } else {
+                    this.viewport.panBy(this.viewport.deltaPointsFromPixels(new $.Point(0, -this.pixelsPerArrowPress)));
+                  }
+                  this.viewport.applyConstraints();
                 }
-                this.viewport.applyConstraints();
                 return false;
             case 40://down arrow
-                if ( event.shift ) {
+                if (!canvasKeyDownEventArgs.preventVerticalPan) {
+                  if ( event.shift ) {
                     this.viewport.zoomBy(0.9);
-                } else {
-                    this.viewport.panBy(this.viewport.deltaPointsFromPixels(new $.Point(0, 40)));
+                  } else {
+                    this.viewport.panBy(this.viewport.deltaPointsFromPixels(new $.Point(0, this.pixelsPerArrowPress)));
+                  }
+                  this.viewport.applyConstraints();
                 }
-                this.viewport.applyConstraints();
                 return false;
             case 37://left arrow
-                this.viewport.panBy(this.viewport.deltaPointsFromPixels(new $.Point(-40, 0)));
-                this.viewport.applyConstraints();
+                if (!canvasKeyDownEventArgs.preventHorizontalPan) {
+                  this.viewport.panBy(this.viewport.deltaPointsFromPixels(new $.Point(-this.pixelsPerArrowPress, 0)));
+                  this.viewport.applyConstraints();
+                }
                 return false;
             case 39://right arrow
-                this.viewport.panBy(this.viewport.deltaPointsFromPixels(new $.Point(40, 0)));
-                this.viewport.applyConstraints();
+                if (!canvasKeyDownEventArgs.preventHorizontalPan) {
+                  this.viewport.panBy(this.viewport.deltaPointsFromPixels(new $.Point(this.pixelsPerArrowPress, 0)));
+                  this.viewport.applyConstraints();
+                }
                 return false;
             default:
                 //console.log( 'navigator keycode %s', event.keyCode );
@@ -9489,9 +9639,18 @@ function onCanvasKeyDown( event ) {
         return true;
     }
 }
-
 function onCanvasKeyPress( event ) {
-    if ( !event.preventDefaultAction && !event.ctrl && !event.alt && !event.meta ) {
+    var canvasKeyPressEventArgs = {
+      originalEvent: event.originalEvent,
+      preventDefaultAction: event.preventDefaultAction,
+      preventVerticalPan: event.preventVerticalPan,
+      preventHorizontalPan: event.preventHorizontalPan
+    };
+
+    // This event is documented in onCanvasKeyDown
+    this.raiseEvent('canvas-key', canvasKeyPressEventArgs);
+
+    if ( !canvasKeyPressEventArgs.preventDefaultAction && !event.ctrl && !event.alt && !event.meta ) {
         switch( event.keyCode ){
             case 43://=|+
             case 61://=|+
@@ -9508,32 +9667,59 @@ function onCanvasKeyPress( event ) {
                 return false;
             case 119://w
             case 87://W
-                if ( event.shift ) {
-                    this.viewport.zoomBy(1.1);
-                } else {
-                    this.viewport.panBy(this.viewport.deltaPointsFromPixels(new $.Point(0, -40)));
-                }
-                this.viewport.applyConstraints();
-                return false;
+                if (!canvasKeyPressEventArgs.preventVerticalPan) {
+                    if ( event.shift ) {
+                        this.viewport.zoomBy(1.1);
+                    } else {
+                        this.viewport.panBy(this.viewport.deltaPointsFromPixels(new $.Point(0, -40)));
+                    }
+                    this.viewport.applyConstraints();
+                  }
+                  return false;
             case 115://s
             case 83://S
-                if ( event.shift ) {
+                if (!canvasKeyPressEventArgs.preventVerticalPan) {
+                  if ( event.shift ) {
                     this.viewport.zoomBy(0.9);
-                } else {
+                  } else {
                     this.viewport.panBy(this.viewport.deltaPointsFromPixels(new $.Point(0, 40)));
+                  }
+                  this.viewport.applyConstraints();
                 }
-                this.viewport.applyConstraints();
                 return false;
             case 97://a
-                this.viewport.panBy(this.viewport.deltaPointsFromPixels(new $.Point(-40, 0)));
-                this.viewport.applyConstraints();
+                if (!canvasKeyPressEventArgs.preventHorizontalPan) {
+                  this.viewport.panBy(this.viewport.deltaPointsFromPixels(new $.Point(-40, 0)));
+                  this.viewport.applyConstraints();
+                }
                 return false;
             case 100://d
-                this.viewport.panBy(this.viewport.deltaPointsFromPixels(new $.Point(40, 0)));
-                this.viewport.applyConstraints();
+                if (!canvasKeyPressEventArgs.preventHorizontalPan) {
+                  this.viewport.panBy(this.viewport.deltaPointsFromPixels(new $.Point(40, 0)));
+                  this.viewport.applyConstraints();
+                }
                 return false;
+            case 114: //r - clockwise rotation
+              if(this.viewport.flipped){
+                this.viewport.setRotation($.positiveModulo(this.viewport.degrees - this.rotationIncrement, 360));
+              } else{
+                this.viewport.setRotation($.positiveModulo(this.viewport.degrees + this.rotationIncrement, 360));
+              }
+              this.viewport.applyConstraints();
+              return false;
+            case 82: //R - counterclockwise  rotation
+              if(this.viewport.flipped){
+                this.viewport.setRotation($.positiveModulo(this.viewport.degrees + this.rotationIncrement, 360));
+              } else{
+                this.viewport.setRotation($.positiveModulo(this.viewport.degrees - this.rotationIncrement, 360));
+              }
+              this.viewport.applyConstraints();
+              return false;
+            case 102: //f
+              this.viewport.toggleFlip();
+              return false;
             default:
-                //console.log( 'navigator keycode %s', event.keyCode );
+                // console.log( 'navigator keycode %s', event.keyCode );
                 return true;
         }
     } else {
@@ -9549,6 +9735,9 @@ function onCanvasClick( event ) {
     // If we don't have keyboard focus, request it.
     if ( !haveKeyboardFocus ) {
         this.canvas.focus();
+    }
+    if(this.viewport.flipped){
+        event.position.x = this.viewport.getContainerSize().x - event.position.x;
     }
 
     var canvasClickEventArgs = {
@@ -9582,7 +9771,7 @@ function onCanvasClick( event ) {
         if ( gestureSettings.clickToZoom ) {
             this.viewport.zoomBy(
                 event.shift ? 1.0 / this.zoomPerClick : this.zoomPerClick,
-                this.viewport.pointFromPixel( event.position, true )
+                gestureSettings.zoomToRefPoint ? this.viewport.pointFromPixel( event.position, true ) : null
             );
             this.viewport.applyConstraints();
         }
@@ -9592,16 +9781,14 @@ function onCanvasClick( event ) {
 function onCanvasDblClick( event ) {
     var gestureSettings;
 
-    if ( !event.preventDefaultAction && this.viewport ) {
-        gestureSettings = this.gestureSettingsByDeviceType( event.pointerType );
-        if ( gestureSettings.dblClickToZoom ) {
-            this.viewport.zoomBy(
-                event.shift ? 1.0 / this.zoomPerClick : this.zoomPerClick,
-                this.viewport.pointFromPixel( event.position, true )
-            );
-            this.viewport.applyConstraints();
-        }
-    }
+    var canvasDblClickEventArgs = {
+        tracker: event.eventSource,
+        position: event.position,
+        shift: event.shift,
+        originalEvent: event.originalEvent,
+        preventDefaultAction: event.preventDefaultAction
+    };
+
     /**
      * Raised when a double mouse press/release or touch/remove occurs on the {@link OpenSeadragon.Viewer#canvas} element.
      *
@@ -9613,14 +9800,21 @@ function onCanvasDblClick( event ) {
      * @property {OpenSeadragon.Point} position - The position of the event relative to the tracked element.
      * @property {Boolean} shift - True if the shift key was pressed during this event.
      * @property {Object} originalEvent - The original DOM event.
+     * @property {Boolean} preventDefaultAction - Set to true to prevent default double tap to zoom behaviour. Default: false.
      * @property {?Object} userData - Arbitrary subscriber-defined object.
      */
-    this.raiseEvent( 'canvas-double-click', {
-        tracker: event.eventSource,
-        position: event.position,
-        shift: event.shift,
-        originalEvent: event.originalEvent
-    });
+    this.raiseEvent( 'canvas-double-click', canvasDblClickEventArgs);
+
+    if ( !canvasDblClickEventArgs.preventDefaultAction && this.viewport ) {
+        gestureSettings = this.gestureSettingsByDeviceType( event.pointerType );
+        if ( gestureSettings.dblClickToZoom ) {
+            this.viewport.zoomBy(
+                event.shift ? 1.0 / this.zoomPerClick : this.zoomPerClick,
+                gestureSettings.zoomToRefPoint ? this.viewport.pointFromPixel( event.position, true ) : null
+            );
+            this.viewport.applyConstraints();
+        }
+    }
 }
 
 function onCanvasDrag( event ) {
@@ -9636,6 +9830,7 @@ function onCanvasDrag( event ) {
         originalEvent: event.originalEvent,
         preventDefaultAction: event.preventDefaultAction
     };
+
     /**
      * Raised when a mouse or touch drag operation occurs on the {@link OpenSeadragon.Viewer#canvas} element.
      *
@@ -9655,13 +9850,16 @@ function onCanvasDrag( event ) {
      */
     this.raiseEvent( 'canvas-drag', canvasDragEventArgs);
 
-    if ( !event.preventDefaultAction && this.viewport ) {
+    if ( !canvasDragEventArgs.preventDefaultAction && this.viewport ) {
         gestureSettings = this.gestureSettingsByDeviceType( event.pointerType );
         if( !this.panHorizontal ){
             event.delta.x = 0;
         }
         if( !this.panVertical ){
             event.delta.y = 0;
+        }
+        if(this.viewport.flipped){
+            event.delta.x = -event.delta.x;
         }
 
         if( this.constrainDuringPan ){
@@ -9929,7 +10127,9 @@ function onCanvasPinch( event ) {
                 panByPt.y = 0;
             }
             this.viewport.zoomBy( event.distance / event.lastDistance, centerPt, true );
-            this.viewport.panBy( panByPt, true );
+            if ( gestureSettings.zoomToRefPoint ) {
+                this.viewport.panBy(panByPt, true);
+            }
             this.viewport.applyConstraints();
         }
         if ( gestureSettings.pinchRotate ) {
@@ -9986,13 +10186,17 @@ function onCanvasScroll( event ) {
     if (deltaScrollTime > this.minScrollDeltaTime) {
         this._lastScrollTime = thisScrollTime;
 
+        if(this.viewport.flipped){
+          event.position.x = this.viewport.getContainerSize().x - event.position.x;
+        }
+
         if ( !event.preventDefaultAction && this.viewport ) {
             gestureSettings = this.gestureSettingsByDeviceType( event.pointerType );
             if ( gestureSettings.scrollToZoom ) {
                 factor = Math.pow( this.zoomPerScroll, event.scroll );
                 this.viewport.zoomBy(
                     factor,
-                    this.viewport.pointFromPixel( event.position, true )
+                    gestureSettings.zoomToRefPoint ? this.viewport.pointFromPixel( event.position, true ) : null
                 );
                 this.viewport.applyConstraints();
             }
@@ -10181,7 +10385,7 @@ function updateOnce( viewer ) {
         drawWorld( viewer );
         viewer._drawOverlays();
         if( viewer.navigator ){
-            viewer.navigator.update( viewer.viewport );
+          viewer.navigator.update( viewer.viewport );
         }
 
         THIS[ viewer.hash ].forceRedraw = false;
@@ -10345,38 +10549,37 @@ function onFullScreen() {
     }
 }
 
-/**
- * Note: The current rotation feature is limited to 90 degree turns.
- */
 function onRotateLeft() {
     if ( this.viewport ) {
         var currRotation = this.viewport.getRotation();
-        if (currRotation === 0) {
-            currRotation = 270;
-        }
-        else {
-            currRotation -= 90;
+
+        if ( this.viewport.flipped ){
+          currRotation = $.positiveModulo(currRotation + this.rotationIncrement, 360);
+        } else {
+          currRotation = $.positiveModulo(currRotation - this.rotationIncrement, 360);
         }
         this.viewport.setRotation(currRotation);
     }
 }
 
-/**
- * Note: The current rotation feature is limited to 90 degree turns.
- */
 function onRotateRight() {
     if ( this.viewport ) {
         var currRotation = this.viewport.getRotation();
-        if (currRotation === 270) {
-            currRotation = 0;
-        }
-        else {
-            currRotation += 90;
+
+        if ( this.viewport.flipped ){
+          currRotation = $.positiveModulo(currRotation - this.rotationIncrement, 360);
+        } else {
+          currRotation = $.positiveModulo(currRotation + this.rotationIncrement, 360);
         }
         this.viewport.setRotation(currRotation);
     }
 }
-
+/**
+ * Note: When pressed flip control button
+ */
+function onFlip() {
+   this.viewport.toggleFlip();
+}
 
 function onPrevious(){
     var previous = this._sequenceIndex - 1;
@@ -10510,7 +10713,11 @@ $.Navigator = function( options ){
         animationTime:          0,
         autoResize:             options.autoResize,
         // prevent resizing the navigator from adding unwanted space around the image
-        minZoomImageRatio:      1.0
+        minZoomImageRatio:      1.0,
+        background:             options.background,
+        opacity:                options.opacity,
+        borderColor:            options.borderColor,
+        displayRegionColor:     options.displayRegionColor
     });
 
     options.minPixelRatio = this.minPixelRatio = viewer.minPixelRatio;
@@ -10527,10 +10734,10 @@ $.Navigator = function( options ){
     if ( options.controlOptions.anchor != $.ControlAnchor.NONE ) {
         (function( style, borderWidth ){
             style.margin        = '0px';
-            style.border        = borderWidth + 'px solid #555';
+            style.border        = borderWidth + 'px solid ' + options.borderColor;
             style.padding       = '0px';
-            style.background    = '#000';
-            style.opacity       = 0.8;
+            style.background    = options.background;
+            style.opacity       = options.opacity;
             style.overflow      = 'hidden';
         }( this.element.style, this.borderWidth));
     }
@@ -10545,10 +10752,10 @@ $.Navigator = function( options ){
         style.left          = '0px';
         style.fontSize      = '0px';
         style.overflow      = 'hidden';
-        style.border        = borderWidth + 'px solid #900';
+        style.border        = borderWidth + 'px solid ' + options.displayRegionColor;
         style.margin        = '0px';
         style.padding       = '0px';
-        //TODO: IE doesnt like this property being set
+        //TODO: IE doesn't like this property being set
         //try{ style.outline  = '2px auto #909'; }catch(e){/*ignore*/}
 
         style.background    = 'transparent';
@@ -10578,16 +10785,14 @@ $.Navigator = function( options ){
     this._resizeWithViewer = options.controlOptions.anchor != $.ControlAnchor.ABSOLUTE &&
         options.controlOptions.anchor != $.ControlAnchor.NONE;
 
-    if ( this._resizeWithViewer ) {
-        if ( options.width && options.height ) {
-            this.element.style.height = typeof (options.height) == "number" ? (options.height + 'px') : options.height;
-            this.element.style.width  = typeof (options.width) == "number" ? (options.width + 'px') : options.width;
-        } else {
-            viewerSize = $.getElementSize( viewer.element );
-            this.element.style.height = Math.round( viewerSize.y * options.sizeRatio ) + 'px';
-            this.element.style.width  = Math.round( viewerSize.x * options.sizeRatio ) + 'px';
-            this.oldViewerSize = viewerSize;
-        }
+    if (options.width && options.height) {
+        this.setWidth(options.width);
+        this.setHeight(options.height);
+    } else if ( this._resizeWithViewer ) {
+        viewerSize = $.getElementSize( viewer.element );
+        this.element.style.height = Math.round( viewerSize.y * options.sizeRatio ) + 'px';
+        this.element.style.width  = Math.round( viewerSize.x * options.sizeRatio ) + 'px';
+        this.oldViewerSize = viewerSize;
         navigatorSize = $.getElementSize( this.element );
         this.elementArea = navigatorSize.x * navigatorSize.y;
     }
@@ -10608,11 +10813,13 @@ $.Navigator = function( options ){
         var degrees = options.viewer.viewport ?
             options.viewer.viewport.getRotation() :
             options.viewer.degrees || 0;
+
         rotate(degrees);
         options.viewer.addHandler("rotate", function (args) {
             rotate(args.degrees);
         });
     }
+
 
     // Remove the base class' (Viewer's) innerTracker and replace it with our own
     this.innerTracker.destroy();
@@ -10670,6 +10877,43 @@ $.extend( $.Navigator.prototype, $.EventSource.prototype, $.Viewer.prototype, /*
                 this.world.draw();
             }
         }
+    },
+
+    /**
+     * Explicitly sets the width of the navigator, in web coordinates. Disables automatic resizing.
+     * @param {Number|String} width - the new width, either a number of pixels or a CSS string, such as "100%"
+     */
+    setWidth: function(width) {
+        this.width = width;
+        this.element.style.width = typeof (width) == "number" ? (width + 'px') : width;
+        this._resizeWithViewer = false;
+    },
+
+    /**
+     * Explicitly sets the height of the navigator, in web coordinates. Disables automatic resizing.
+     * @param {Number|String} height - the new height, either a number of pixels or a CSS string, such as "100%"
+     */
+    setHeight: function(height) {
+        this.height = height;
+        this.element.style.height = typeof (height) == "number" ? (height + 'px') : height;
+        this._resizeWithViewer = false;
+    },
+
+    /**
+      * Flip navigator element
+      * @param {Boolean} state - Flip state to set.
+      */
+    setFlip: function(state) {
+      this.viewport.setFlip(state);
+
+      this.setDisplayTransform(this.viewer.viewport.getFlip() ? "scale(-1,1)" : "scale(1,1)");
+      return this;
+    },
+
+    setDisplayTransform: function(rule) {
+      setElementTransform(this.displayRegion, rule);
+      setElementTransform(this.canvas, rule);
+      setElementTransform(this.element, rule);
     },
 
     /**
@@ -10799,16 +11043,55 @@ $.extend( $.Navigator.prototype, $.EventSource.prototype, $.Viewer.prototype, /*
     }
 });
 
+
 /**
  * @private
  * @inner
  * @function
  */
 function onCanvasClick( event ) {
-    if ( event.quick && this.viewer.viewport ) {
-        this.viewer.viewport.panTo(this.viewport.pointFromPixel(event.position));
-        this.viewer.viewport.applyConstraints();
+  var canvasClickEventArgs = {
+    tracker: event.eventSource,
+    position: event.position,
+    quick: event.quick,
+    shift: event.shift,
+    originalEvent: event.originalEvent,
+    preventDefaultAction: event.preventDefaultAction
+  };
+  /**
+   * Raised when a click event occurs on the {@link OpenSeadragon.Viewer#navigator} element.
+   *
+   * @event navigator-click
+   * @memberof OpenSeadragon.Viewer
+   * @type {object}
+   * @property {OpenSeadragon.Viewer} eventSource - A reference to the Viewer which raised this event.
+   * @property {OpenSeadragon.MouseTracker} tracker - A reference to the MouseTracker which originated this event.
+   * @property {OpenSeadragon.Point} position - The position of the event relative to the tracked element.
+   * @property {Boolean} quick - True only if the clickDistThreshold and clickTimeThreshold are both passed. Useful for differentiating between clicks and drags.
+   * @property {Boolean} shift - True if the shift key was pressed during this event.
+   * @property {Object} originalEvent - The original DOM event.
+   * @property {?Object} userData - Arbitrary subscriber-defined object.
+   * @property {Boolean} preventDefaultAction - Set to true to prevent default click to zoom behaviour. Default: false.
+   */
+
+   this.viewer.raiseEvent('navigator-click', canvasClickEventArgs);
+
+   if ( !canvasClickEventArgs.preventDefaultAction && event.quick && this.viewer.viewport && (this.panVertical || this.panHorizontal)) {
+    if(this.viewer.viewport.flipped) {
+      event.position.x = this.viewport.getContainerSize().x - event.position.x;
     }
+    var target = this.viewport.pointFromPixel(event.position);
+    if (!this.panVertical) {
+      // perform only horizonal pan
+      target.y = this.viewer.viewport.getCenter(true).y;
+    } else if (!this.panHorizontal) {
+      // perform only vertical pan
+      target.x = this.viewer.viewport.getCenter(true).x;
+    }
+    this.viewer.viewport.panTo(target);
+    this.viewer.viewport.applyConstraints();
+  }
+
 }
 
 /**
@@ -10817,13 +11100,47 @@ function onCanvasClick( event ) {
  * @function
  */
 function onCanvasDrag( event ) {
-    if ( this.viewer.viewport ) {
-        if( !this.panHorizontal ){
+    var canvasDragEventArgs = {
+      tracker: event.eventSource,
+      position: event.position,
+      delta: event.delta,
+      speed: event.speed,
+      direction: event.direction,
+      shift: event.shift,
+      originalEvent: event.originalEvent,
+      preventDefaultAction: event.preventDefaultAction
+    };
+    /**
+     * Raised when a drag event occurs on the {@link OpenSeadragon.Viewer#navigator} element.
+     *
+     * @event navigator-drag
+     * @memberof OpenSeadragon.Viewer
+     * @type {object}
+     * @property {OpenSeadragon.Viewer} eventSource - A reference to the Viewer which raised this event.
+     * @property {OpenSeadragon.MouseTracker} tracker - A reference to the MouseTracker which originated this event.
+     * @property {OpenSeadragon.Point} position - The position of the event relative to the tracked element.
+     * @property {OpenSeadragon.Point} delta - The x,y components of the difference between start drag and end drag.
+     * @property {Number} speed - Current computed speed, in pixels per second.
+     * @property {Number} direction - Current computed direction, expressed as an angle counterclockwise relative to the positive X axis (-pi to pi, in radians). Only valid if speed > 0.
+     * @property {Boolean} shift - True if the shift key was pressed during this event.
+     * @property {Object} originalEvent - The original DOM event.
+     * @property {?Object} userData - Arbitrary subscriber-defined object.
+     * @property {Boolean} preventDefaultAction - Set to true to prevent default click to zoom behaviour. Default: false.
+     */
+     this.viewer.raiseEvent('navigator-drag', canvasDragEventArgs);
+
+     if ( !canvasDragEventArgs.preventDefaultAction && this.viewer.viewport ) {
+       if( !this.panHorizontal ){
             event.delta.x = 0;
         }
         if( !this.panVertical ){
             event.delta.y = 0;
         }
+
+        if(this.viewer.viewport.flipped){
+            event.delta.x = -event.delta.x;
+        }
+
         this.viewer.viewport.panBy(
             this.viewport.deltaPointsFromPixels(
                 event.delta
@@ -10876,7 +11193,7 @@ function onCanvasScroll( event ) {
         originalEvent: event.originalEvent
     });
 
-    //dont scroll the page up and down if the user is scrolling
+    //don't scroll the page up and down if the user is scrolling
     //in the navigator
     return false;
 }
@@ -10887,12 +11204,16 @@ function onCanvasScroll( event ) {
     * @param {Object} element
     * @param {Number} degrees
     */
-function _setTransformRotate (element, degrees) {
-    element.style.webkitTransform = "rotate(" + degrees + "deg)";
-    element.style.mozTransform = "rotate(" + degrees + "deg)";
-    element.style.msTransform = "rotate(" + degrees + "deg)";
-    element.style.oTransform = "rotate(" + degrees + "deg)";
-    element.style.transform = "rotate(" + degrees + "deg)";
+function _setTransformRotate( element, degrees ) {
+  setElementTransform(element, "rotate(" + degrees + "deg)");
+}
+
+function setElementTransform( element, rule ) {
+  element.style.webkitTransform = rule;
+  element.style.mozTransform = rule;
+  element.style.msTransform = rule;
+  element.style.oTransform = rule;
+  element.style.transform = rule;
 }
 
 }( OpenSeadragon ));
@@ -10956,7 +11277,8 @@ var I18N = {
         NextPage:       "Next page",
         PreviousPage:   "Previous page",
         RotateLeft:     "Rotate left",
-        RotateRight:    "Rotate right"
+        RotateRight:    "Rotate right",
+        Flip:           "Flip Horizontally"
     }
 };
 
@@ -10980,7 +11302,7 @@ $.extend( $, /** @lends OpenSeadragon */{
         }
         string = container[ props[ i ] ];
 
-        if ( typeof( string ) != "string" ) {
+        if ( typeof ( string ) != "string" ) {
             $.console.log( "Untranslated source string:", prop );
             string = ""; // FIXME: this breaks gettext()-style convention, which would return source
         }
@@ -11104,10 +11426,10 @@ $.Point.prototype = {
     },
 
     /**
-     * Substract another Point to this point and return a new Point.
+     * Subtract another Point to this point and return a new Point.
      * @function
-     * @param {OpenSeadragon.Point} point The point to substract vector components.
-     * @returns {OpenSeadragon.Point} A new point representing the substraction of the
+     * @param {OpenSeadragon.Point} point The point to subtract vector components.
+     * @returns {OpenSeadragon.Point} A new point representing the subtraction of the
      *  vector components
      */
     minus: function( point ) {
@@ -11379,7 +11701,7 @@ $.TileSource = function( width, height, tileSize, tileOverlap, minLevel, maxLeve
     //by asynchronously fetching their configuration data.
     $.EventSource.call( this );
 
-    //we allow options to override anything we dont treat as
+    //we allow options to override anything we don't treat as
     //required via idiomatic options or which is functionally
     //set depending on the state of the readiness of this tile
     //source
@@ -11438,7 +11760,7 @@ $.TileSource = function( width, height, tileSize, tileOverlap, minLevel, maxLeve
     }
 
     if (this.url) {
-        //in case the getImageInfo method is overriden and/or implies an
+        //in case the getImageInfo method is overridden and/or implies an
         //async mechanism set some safe defaults first
         this.aspectRatio = 1;
         this.dimensions  = new $.Point( 10, 10 );
@@ -11505,7 +11827,7 @@ $.TileSource.prototype = {
 
     getTileSize: function( level ) {
         $.console.error(
-            "[TileSource.getTileSize] is deprecated." +
+            "[TileSource.getTileSize] is deprecated. " +
             "Use TileSource.getTileWidth() and TileSource.getTileHeight() instead"
         );
         return this._tileWidth;
@@ -11626,7 +11948,8 @@ $.TileSource.prototype = {
         if (point.x >= 1) {
             x = this.getNumTiles(level).x - 1;
         }
-        if (point.y >= 1 / this.aspectRatio) {
+        var EPSILON = 1e-15;
+        if (point.y >= 1 / this.aspectRatio - EPSILON) {
             y = this.getNumTiles(level).y - 1;
         }
 
@@ -11638,8 +11961,12 @@ $.TileSource.prototype = {
      * @param {Number} level
      * @param {Number} x
      * @param {Number} y
+     * @param {Boolean} [isSource=false] Whether to return the source bounds of the tile.
+     * @returns {OpenSeadragon.Rect} Either where this tile fits (in normalized coordinates) or the
+     * portion of the tile to use as the source of the drawing operation (in pixels), depending on
+     * the isSource parameter.
      */
-    getTileBounds: function( level, x, y ) {
+    getTileBounds: function( level, x, y, isSource ) {
         var dimensionsScaled = this.dimensions.times( this.getLevelScale( level ) ),
             tileWidth = this.getTileWidth(level),
             tileHeight = this.getTileHeight(level),
@@ -11651,6 +11978,10 @@ $.TileSource.prototype = {
 
         sx = Math.min( sx, dimensionsScaled.x - px );
         sy = Math.min( sy, dimensionsScaled.y - py );
+
+        if (isSource) {
+            return new $.Rect(0, 0, sx, sy);
+        }
 
         return new $.Rect( px * scale, py * scale, sx * scale, sy * scale );
     },
@@ -11684,7 +12015,7 @@ $.TileSource.prototype = {
         }
 
         callback = function( data ){
-            if( typeof(data) === "string" ) {
+            if( typeof (data) === "string" ) {
                 data = $.parseXml( data );
             }
             var $TileSource = $.TileSource.determineType( _this, data, url );
@@ -11757,7 +12088,7 @@ $.TileSource.prototype = {
                         msg = "HTTP " + xhr.status + " attempting to load TileSource";
                     } catch ( e ) {
                         var formattedExc;
-                        if ( typeof( exc ) == "undefined" || !exc.toString ) {
+                        if ( typeof ( exc ) == "undefined" || !exc.toString ) {
                             formattedExc = "Unknown error";
                         } else {
                             formattedExc = exc.toString();
@@ -12077,7 +12408,7 @@ $.extend( $.DziTileSource.prototype, $.TileSource.prototype, /** @lends OpenSead
      *
      * @function
      * @param {Object|XMLDocument} data - the raw configuration
-     * @param {String} url - the url the data was retreived from if any.
+     * @param {String} url - the url the data was retrieved from if any.
      * @return {Object} options - A dictionary of keyword arguments sufficient
      *      to configure this tile sources constructor.
      */
@@ -12135,6 +12466,10 @@ $.extend( $.DziTileSource.prototype, $.TileSource.prototype, /** @lends OpenSead
             xMax,
             yMax,
             i;
+
+        if ((this.minLevel && level < this.minLevel) || (this.maxLevel && level > this.maxLevel)) {
+            return false;
+        }
 
         if ( !rects || !rects.length ) {
             return true;
@@ -12370,6 +12705,8 @@ function configureFromObject( tileSource, configuration ){
  * @memberof OpenSeadragon
  * @extends OpenSeadragon.TileSource
  * @see http://iiif.io/api/image/
+ * @param {String} [options.tileFormat='jpg']
+ *      The extension that will be used when requiring tiles.
  */
 $.IIIFTileSource = function( options ){
 
@@ -12382,6 +12719,10 @@ $.IIIFTileSource = function( options ){
     }
 
     options.tileSizePerScaleFactor = {};
+
+    this.tileFormat = this.tileFormat || 'jpg';
+
+    this.version = options.version;
 
     // N.B. 2.0 renamed scale_factors to scaleFactors
     if ( this.tile_width && this.tile_height ) {
@@ -12412,7 +12753,7 @@ $.IIIFTileSource = function( options ){
                 }
             }
         }
-    } else if ( canBeTiled(options.profile) ) {
+    } else if ( canBeTiled(options) ) {
         // use the largest of tileOptions that is smaller than the short dimension
         var shortDim = Math.min( this.height, this.width ),
             tileOptions = [256, 512, 1024],
@@ -12455,7 +12796,8 @@ $.IIIFTileSource = function( options ){
         if (!this.scale_factors) {
             options.maxLevel = Number(Math.ceil(Math.log(Math.max(this.width, this.height), 2)));
         } else {
-            options.maxLevel = Math.floor(Math.pow(Math.max.apply(null, this.scale_factors), 0.5));
+            var maxScaleFactor = Math.max.apply(null, this.scale_factors);
+            options.maxLevel = Math.round(Math.log(maxScaleFactor) * Math.LOG2E);
         }
     }
 
@@ -12524,12 +12866,51 @@ $.extend( $.IIIFTileSource.prototype, $.TileSource.prototype, /** @lends OpenSea
             var options = configureFromXml10( data );
             options['@context'] = "http://iiif.io/api/image/1.0/context.json";
             options['@id'] = url.replace('/info.xml', '');
+            options.version = 1;
             return options;
-        } else if ( !data['@context'] ) {
-            data['@context'] = 'http://iiif.io/api/image/1.0/context.json';
-            data['@id'] = url.replace('/info.json', '');
-            return data;
         } else {
+            if ( !data['@context'] ) {
+                data['@context'] = 'http://iiif.io/api/image/1.0/context.json';
+                data['@id'] = url.replace('/info.json', '');
+                data.version = 1;
+            } else {
+                var context = data['@context'];
+                if (Array.isArray(context)) {
+                    for (var i = 0; i < context.length; i++) {
+                        if (typeof context[i] === 'string' &&
+                            ( /^http:\/\/iiif\.io\/api\/image\/[1-3]\/context\.json$/.test(context[i]) ||
+                            context[i] === 'http://library.stanford.edu/iiif/image-api/1.1/context.json' ) ) {
+                            context = context[i];
+                            break;
+                        }
+                    }
+                }
+                switch (context) {
+                    case 'http://iiif.io/api/image/1/context.json':
+                    case 'http://library.stanford.edu/iiif/image-api/1.1/context.json':
+                        data.version = 1;
+                        break;
+                    case 'http://iiif.io/api/image/2/context.json':
+                        data.version = 2;
+                        break;
+                    case 'http://iiif.io/api/image/3/context.json':
+                        data.version = 3;
+                        break;
+                    default:
+                        $.console.error('Data has a @context property which contains no known IIIF context URI.');
+                }
+            }
+            if ( !data['@id'] && data['id'] ) {
+                data['@id'] = data['id'];
+            }
+            if(data.preferredFormats) {
+                for (var f = 0; f < data.preferredFormats.length; f++ ) {
+                    if ( OpenSeadragon.imageFormatSupported(data.preferredFormats[f]) ) {
+                        data.tileFormat = data.preferredFormats[f];
+                        break;
+                    }
+                }
+            }
             return data;
         }
     },
@@ -12664,6 +13045,8 @@ $.extend( $.IIIFTileSource.prototype, $.TileSource.prototype, /** @lends OpenSea
             iiifTileW,
             iiifTileH,
             iiifSize,
+            iiifSizeW,
+            iiifSizeH,
             iiifQuality,
             uri;
 
@@ -12671,29 +13054,52 @@ $.extend( $.IIIFTileSource.prototype, $.TileSource.prototype, /** @lends OpenSea
         tileHeight = this.getTileHeight(level);
         iiifTileSizeWidth = Math.ceil( tileWidth / scale );
         iiifTileSizeHeight = Math.ceil( tileHeight / scale );
-
-        if ( this['@context'].indexOf('/1.0/context.json') > -1 ||
-             this['@context'].indexOf('/1.1/context.json') > -1 ||
-             this['@context'].indexOf('/1/context.json') > -1 ) {
-            iiifQuality = "native.jpg";
+        if (this.version === 1) {
+            iiifQuality = "native." + this.tileFormat;
         } else {
-            iiifQuality = "default.jpg";
+            iiifQuality = "default." + this.tileFormat;
         }
-
         if ( levelWidth < tileWidth && levelHeight < tileHeight ){
-            iiifSize = levelWidth + ",";
+            if ( this.version === 2 && levelWidth === this.width ) {
+                iiifSize = "max";
+            } else if ( this.version === 3 && levelWidth === this.width && levelHeight === this.height ) {
+                iiifSize = "max";
+            } else if ( this.version === 3 ) {
+                iiifSize = levelWidth + "," + levelHeight;
+            } else {
+                iiifSize = levelWidth + ",";
+            }
             iiifRegion = 'full';
         } else {
             iiifTileX = x * iiifTileSizeWidth;
             iiifTileY = y * iiifTileSizeHeight;
             iiifTileW = Math.min( iiifTileSizeWidth, this.width - iiifTileX );
             iiifTileH = Math.min( iiifTileSizeHeight, this.height - iiifTileY );
-            iiifSize = Math.ceil( iiifTileW * scale ) + ",";
-            iiifRegion = [ iiifTileX, iiifTileY, iiifTileW, iiifTileH ].join( ',' );
+            if ( x === 0 && y === 0 && iiifTileW === this.width && iiifTileH === this.height ) {
+                iiifRegion = "full";
+            } else {
+                iiifRegion = [ iiifTileX, iiifTileY, iiifTileW, iiifTileH ].join( ',' );
+            }
+            iiifSizeW = Math.ceil( iiifTileW * scale );
+            iiifSizeH = Math.ceil( iiifTileH * scale );
+            if ( this.version === 2 && iiifSizeW === this.width ) {
+                iiifSize = "max";
+            } else if ( this.version === 3 && iiifSizeW === this.width && iiifSizeH === this.height ) {
+                iiifSize = "max";
+            } else if (this.version === 3) {
+                iiifSize = iiifSizeW + "," + iiifSizeH;
+            } else {
+                iiifSize = iiifSizeW + ",";
+            }
         }
         uri = [ this['@id'], iiifRegion, iiifSize, IIIF_ROTATION, iiifQuality ].join( '/' );
 
         return uri;
+    },
+
+    __testonly__: {
+        canBeTiled: canBeTiled,
+        constructLevels: constructLevels
     }
 
   });
@@ -12701,17 +13107,27 @@ $.extend( $.IIIFTileSource.prototype, $.TileSource.prototype, /** @lends OpenSea
     /**
      * Determine whether arbitrary tile requests can be made against a service with the given profile
      * @function
-     * @param {object} profile - IIIF profile object
+     * @param {array} profile - IIIF profile array
      * @throws {Error}
      */
-    function canBeTiled (profile ) {
+    function canBeTiled ( options ) {
         var level0Profiles = [
             "http://library.stanford.edu/iiif/image-api/compliance.html#level0",
             "http://library.stanford.edu/iiif/image-api/1.1/compliance.html#level0",
-            "http://iiif.io/api/image/2/level0.json"
+            "http://iiif.io/api/image/2/level0.json",
+            "level0",
+            "https://iiif.io/api/image/3/level0.json"
         ];
-        var isLevel0 = (level0Profiles.indexOf(profile[0]) != -1);
-        return !isLevel0 || (profile.indexOf("sizeByW") != -1);
+        var profileLevel = Array.isArray(options.profile) ? options.profile[0] : options.profile;
+        var isLevel0 = (level0Profiles.indexOf(profileLevel) !== -1);
+        var hasCanoncicalSizeFeature = false;
+        if ( options.version === 2 && options.profile.length > 1 && options.profile[1].supports ) {
+            hasCanoncicalSizeFeature = options.profile[1].supports.indexOf( "sizeByW" ) !== -1;
+        }
+        if ( options.version === 3 && options.extraFeatures ) {
+            hasCanoncicalSizeFeature = options.extraFeatures.indexOf( "sizeByWh" ) !== -1;
+        }
+        return !isLevel0 || hasCanoncicalSizeFeature;
     }
 
     /**
@@ -12724,7 +13140,9 @@ $.extend( $.IIIFTileSource.prototype, $.TileSource.prototype, /** @lends OpenSea
         var levels = [];
         for(var i = 0; i < options.sizes.length; i++) {
             levels.push({
-                url: options['@id'] + '/full/' + options.sizes[i].width + ',/0/default.jpg',
+                url: options['@id'] + '/full/' + options.sizes[i].width + ',' +
+                    (options.version === 3 ? options.sizes[i].height : '') +
+                    '/0/default.' + options.tileFormat,
                 width: options.sizes[i].width,
                 height: options.sizes[i].height
             });
@@ -12910,7 +13328,7 @@ $.extend( $.OsmTileSource.prototype, $.TileSource.prototype, /** @lends OpenSead
      *
      * @function
      * @param {Object} data - the raw configuration
-     * @param {String} url - the url the data was retreived from if any.
+     * @param {String} url - the url the data was retrieved from if any.
      * @return {Object} options - A dictionary of keyword arguments sufficient
      *      to configure this tile sources constructor.
      */
@@ -13045,7 +13463,7 @@ $.extend( $.TmsTileSource.prototype, $.TileSource.prototype, /** @lends OpenSead
      *
      * @function
      * @param {Object} data - the raw configuration
-     * @param {String} url - the url the data was retreived from if any.
+     * @param {String} url - the url the data was retrieved from if any.
      * @return {Object} options - A dictionary of keyword arguments sufficient
      *      to configure this tile sources constructor.
      */
@@ -13187,7 +13605,7 @@ $.extend( $.TmsTileSource.prototype, $.TileSource.prototype, /** @lends OpenSead
          *
          * @function
          * @param {Object} data - the raw configuration
-         * @param {String} url - the url the data was retreived from if any.
+         * @param {String} url - the url the data was retrieved from if any.
          * @return {Object} options - A dictionary of keyword arguments sufficient
          *      to configure this tile sources constructor.
          */
@@ -13337,7 +13755,7 @@ $.extend( $.LegacyTileSource.prototype, $.TileSource.prototype, /** @lends OpenS
      *
      * @function
      * @param {Object|XMLDocument} configuration - the raw configuration
-     * @param {String} dataUrl - the url the data was retreived from if any.
+     * @param {String} dataUrl - the url the data was retrieved from if any.
      * @return {Object} options - A dictionary of keyword arguments sufficient
      *      to configure this tile sources constructor.
      */
@@ -13406,7 +13824,7 @@ $.extend( $.LegacyTileSource.prototype, $.TileSource.prototype, /** @lends OpenS
 } );
 
 /**
- * This method removes any files from the Array which dont conform to our
+ * This method removes any files from the Array which don't conform to our
  * basic requirements for a 'level' in the LegacyTileSource.
  * @private
  * @inner
@@ -13595,7 +14013,7 @@ function configureFromObject( tileSource, configuration ){
          *
          * @function
          * @param {Object} options - the options
-         * @param {String} dataUrl - the url the image was retreived from, if any.
+         * @param {String} dataUrl - the url the image was retrieved from, if any.
          * @return {Object} options - A dictionary of keyword arguments sufficient
          *      to configure this tile sources constructor.
          */
@@ -13705,7 +14123,7 @@ function configureFromObject( tileSource, configuration ){
 
         // private
         //
-        // Builds the differents levels of the pyramid if possible
+        // Builds the different levels of the pyramid if possible
         // (i.e. if canvas API enabled and no canvas tainting issue).
         _buildLevels: function () {
             var levels = [{
@@ -14394,11 +14812,11 @@ $.ButtonGroup = function( options ) {
 
     // TODO What if there IS an options.group specified?
     if( !options.group ){
-        this.label   = $.makeNeutralElement( "label" );
+        this.element.style.display = "inline-block";
+        //this.label   = $.makeNeutralElement( "label" );
         //TODO: support labels for ButtonGroups
         //this.label.innerHTML = this.labelText;
-        this.element.style.display = "inline-block";
-        this.element.appendChild( this.label );
+        //this.element.appendChild( this.label );
         for ( i = 0; i < buttons.length; i++ ) {
             this.element.appendChild( buttons[ i ].element );
         }
@@ -14407,7 +14825,7 @@ $.ButtonGroup = function( options ) {
     $.setElementTouchActionNone( this.element );
 
     /**
-     * Tracks mouse/touch/key events accross the group of buttons.
+     * Tracks mouse/touch/key events across the group of buttons.
      * @member {OpenSeadragon.MouseTracker} tracker
      * @memberof OpenSeadragon.ButtonGroup#
      */
@@ -14519,27 +14937,32 @@ $.Rect = function(x, y, width, height, degrees) {
      * @member {Number} x
      * @memberof OpenSeadragon.Rect#
      */
-    this.x = typeof(x) === "number" ? x : 0;
+    this.x = typeof (x) === "number" ? x : 0;
     /**
      * The vector component 'y'.
      * @member {Number} y
      * @memberof OpenSeadragon.Rect#
      */
-    this.y = typeof(y) === "number" ? y : 0;
+    this.y = typeof (y) === "number" ? y : 0;
     /**
      * The vector component 'width'.
      * @member {Number} width
      * @memberof OpenSeadragon.Rect#
      */
-    this.width  = typeof(width) === "number" ? width : 0;
+    this.width  = typeof (width) === "number" ? width : 0;
     /**
      * The vector component 'height'.
      * @member {Number} height
      * @memberof OpenSeadragon.Rect#
      */
-    this.height = typeof(height) === "number" ? height : 0;
+    this.height = typeof (height) === "number" ? height : 0;
 
-    this.degrees = typeof(degrees) === "number" ? degrees : 0;
+    /**
+     * The rotation of the rectangle, in degrees.
+     * @member {Number} degrees
+     * @memberof OpenSeadragon.Rect#
+     */
+    this.degrees = typeof (degrees) === "number" ? degrees : 0;
 
     // Normalizes the rectangle.
     this.degrees = $.positiveModulo(this.degrees, 360);
@@ -15073,7 +15496,7 @@ var THIS = {};
  *  TODO:   The difficult part of this feature is figuring out how to express
  *          this functionality as a combination of the functionality already
  *          provided by Drawer, Viewport, TileSource, and Navigator.  It may
- *          require better abstraction at those points in order to effeciently
+ *          require better abstraction at those points in order to efficiently
  *          reuse those paradigms.
  */
 /**
@@ -15256,7 +15679,7 @@ $.extend( $.ReferenceStrip.prototype, $.EventSource.prototype, $.Viewer.prototyp
      * @function
      */
     setFocus: function ( page ) {
-        var element      = $.getElement( this.element.id + '-' + page ),
+        var element      = this.element.querySelector('#' + this.element.id + '-' + page ),
             viewerSize   = $.getElementSize( this.viewer.canvas ),
             scrollWidth  = Number( this.element.style.width.replace( 'px', '' ) ),
             scrollHeight = Number( this.element.style.height.replace( 'px', '' ) ),
@@ -15469,7 +15892,10 @@ function loadPanels( strip, viewerSize, scroll ) {
                 showSequenceControl:    false,
                 immediateRender:        true,
                 blendTime:              0,
-                animationTime:          0
+                animationTime:          0,
+                loadTilesWithAjax:      strip.viewer.loadTilesWithAjax,
+                ajaxHeaders:            strip.viewer.ajaxHeaders,
+                useCanvas:              strip.useCanvas
             } );
 
             miniViewer.displayRegion           = $.makeNeutralElement( "div" );
@@ -15757,7 +16183,7 @@ $.extend( $.DisplayRect.prototype, $.Rect.prototype );
 $.Spring = function( options ) {
     var args = arguments;
 
-    if( typeof( options ) != 'object' ){
+    if( typeof ( options ) != 'object' ){
         //allows backward compatible use of ( initialValue, config ) as
         //constructor parameters
         options = {
@@ -16053,7 +16479,7 @@ ImageJob.prototype = {
         };
 
         this.jobId = window.setTimeout(function(){
-            self.errorMsg = "Image load exceeded timeout";
+            self.errorMsg = "Image load exceeded timeout (" + self.timeout + " ms)";
             self.finish(false);
         }, this.timeout);
 
@@ -16278,7 +16704,7 @@ function completeJob(loader, job, callback) {
  * @param {Number} level The zoom level this tile belongs to.
  * @param {Number} x The vector component 'x'.
  * @param {Number} y The vector component 'y'.
- * @param {OpenSeadragon.Point} bounds Where this tile fits, in normalized
+ * @param {OpenSeadragon.Rect} bounds Where this tile fits, in normalized
  *      coordinates.
  * @param {Boolean} exists Is this tile a part of a sparse image? ( Also has
  *      this tile failed to load? )
@@ -16287,8 +16713,11 @@ function completeJob(loader, job, callback) {
  * is provided directly by the tile source.
  * @param {Boolean} loadWithAjax Whether this tile image should be loaded with an AJAX request .
  * @param {Object} ajaxHeaders The headers to send with this tile's AJAX request (if applicable).
+ * @param {OpenSeadragon.Rect} sourceBounds The portion of the tile to use as the source of the
+ * drawing operation, in pixels. Note that this only works when drawing with canvas; when drawing
+ * with HTML the entire tile is always used.
  */
-$.Tile = function(level, x, y, bounds, exists, url, context2D, loadWithAjax, ajaxHeaders) {
+$.Tile = function(level, x, y, bounds, exists, url, context2D, loadWithAjax, ajaxHeaders, sourceBounds) {
     /**
      * The zoom level this tile belongs to.
      * @member {Number} level
@@ -16313,6 +16742,13 @@ $.Tile = function(level, x, y, bounds, exists, url, context2D, loadWithAjax, aja
      * @memberof OpenSeadragon.Tile#
      */
     this.bounds  = bounds;
+    /**
+    * The portion of the tile to use as the source of the drawing operation, in pixels. Note that
+    * this only works when drawing with canvas; when drawing with HTML the entire tile is always used.
+    * @member {OpenSeadragon.Rect} sourceBounds
+    * @memberof OpenSeadragon.Tile#
+    */
+    this.sourceBounds = sourceBounds;
     /**
      * Is this tile a part of a sparse image? Also has this tile failed to load?
      * @member {Boolean} exists
@@ -16437,12 +16873,27 @@ $.Tile = function(level, x, y, bounds, exists, url, context2D, loadWithAjax, aja
      * @memberof OpenSeadragon.Tile#
      */
     this.beingDrawn     = false;
+
     /**
      * Timestamp the tile was last touched.
      * @member {Number} lastTouchTime
      * @memberof OpenSeadragon.Tile#
      */
     this.lastTouchTime  = 0;
+
+    /**
+     * Whether this tile is in the right-most column for its level.
+     * @member {Boolean} isRightMost
+     * @memberof OpenSeadragon.Tile#
+     */
+    this.isRightMost = false;
+
+    /**
+     * Whether this tile is in the bottom-most row for its level.
+     * @member {Boolean} isBottomMost
+     * @memberof OpenSeadragon.Tile#
+     */
+    this.isBottomMost = false;
 };
 
 /** @lends OpenSeadragon.Tile.prototype */
@@ -16569,10 +17020,10 @@ $.Tile.prototype = {
             //clearing only the inside of the rectangle occupied
             //by the png prevents edge flikering
             context.clearRect(
-                position.x + 1,
-                position.y + 1,
-                size.x - 2,
-                size.y - 2
+                position.x,
+                position.y,
+                size.x,
+                size.y
             );
         }
 
@@ -16580,12 +17031,21 @@ $.Tile.prototype = {
         // changes as we are rendering the image
         drawingHandler({context: context, tile: this, rendered: rendered});
 
+        var sourceWidth, sourceHeight;
+        if (this.sourceBounds) {
+            sourceWidth = Math.min(this.sourceBounds.width, rendered.canvas.width);
+            sourceHeight = Math.min(this.sourceBounds.height, rendered.canvas.height);
+        } else {
+            sourceWidth = rendered.canvas.width;
+            sourceHeight = rendered.canvas.height;
+        }
+
         context.drawImage(
             rendered.canvas,
             0,
             0,
-            rendered.canvas.width,
-            rendered.canvas.height,
+            sourceWidth,
+            sourceHeight,
             position.x,
             position.y,
             size.x,
@@ -16755,7 +17215,7 @@ $.Tile.prototype = {
      * Defines what part of the overlay should be at the specified options.location
      * @param {OpenSeadragon.Overlay.OnDrawCallback} [options.onDraw]
      * @param {Boolean} [options.checkResize=true] Set to false to avoid to
-     * check the size of the overlay everytime it is drawn in the directions
+     * check the size of the overlay every time it is drawn in the directions
      * which are not scaled. It will improve performances but will cause a
      * misalignment if the overlay size changes.
      * @param {Number} [options.width] The width of the overlay in viewport
@@ -17189,7 +17649,7 @@ $.Drawer = function( options ) {
 
     $.console.assert( options.viewer, "[Drawer] options.viewer is required" );
 
-    //backward compatibility for positional args while prefering more
+    //backward compatibility for positional args while preferring more
     //idiomatic javascript options object as the only argument
     var args  = arguments;
 
@@ -17210,7 +17670,7 @@ $.Drawer = function( options ) {
 
     this.viewer = options.viewer;
     this.viewport = options.viewport;
-    this.debugGridColor = options.debugGridColor || $.DEFAULT_SETTINGS.debugGridColor;
+    this.debugGridColor = typeof options.debugGridColor === 'string' ? [options.debugGridColor] : options.debugGridColor || $.DEFAULT_SETTINGS.debugGridColor;
     if (options.opacity) {
         $.console.error( "[Drawer] options.opacity is no longer accepted; set the opacity on the TiledImage instead" );
     }
@@ -17271,6 +17731,10 @@ $.Drawer = function( options ) {
     // explicit left-align
     this.container.style.textAlign = "left";
     this.container.appendChild( this.canvas );
+
+    // Image smoothing for canvas rendering (only if canvas is used).
+    // Canvas default is "true", so this will only be changed if user specified "false".
+    this._imageSmoothingEnabled = true;
 };
 
 /** @lends OpenSeadragon.Drawer.prototype */
@@ -17301,6 +17765,41 @@ $.Drawer.prototype = {
         $.console.error("drawer.clearOverlays is deprecated. Use viewer.clearOverlays instead.");
         this.viewer.clearOverlays();
         return this;
+    },
+
+    /**
+     * This function converts the given point from to the drawer coordinate by
+     * multiplying it with the pixel density.
+     * This function does not take rotation into account, thus assuming provided
+     * point is at 0 degree.
+     * @param {OpenSeadragon.Point} point - the pixel point to convert
+     */
+    viewportCoordToDrawerCoord: function(point) {
+        var vpPoint = this.viewport.pixelFromPointNoRotate(point, true);
+        return new $.Point(
+            vpPoint.x * $.pixelDensityRatio,
+            vpPoint.y * $.pixelDensityRatio
+        );
+    },
+
+    /**
+     * This function will create multiple polygon paths on the drawing context by provided polygons,
+     * then clip the context to the paths.
+     * @param {(OpenSeadragon.Point[])[]} polygons - an array of polygons. A polygon is an array of OpenSeadragon.Point
+     * @param {Boolean} useSketch - Whether to use the sketch canvas or not.
+     */
+    clipWithPolygons: function (polygons, useSketch) {
+        if (!this.useCanvas) {
+            return;
+        }
+        var context = this._getContext(useSketch);
+        context.beginPath();
+        polygons.forEach(function (polygon) {
+            polygon.forEach(function (coord, i) {
+                context[i === 0 ? 'moveTo' : 'lineTo'](coord.x, coord.y);
+          });
+        });
+        context.clip();
     },
 
     /**
@@ -17390,10 +17889,12 @@ $.Drawer.prototype = {
                 this.canvas.height != viewportSize.y ) {
                 this.canvas.width = viewportSize.x;
                 this.canvas.height = viewportSize.y;
+                this._updateImageSmoothingEnabled(this.context);
                 if ( this.sketchCanvas !== null ) {
                     var sketchCanvasSize = this._calculateSketchCanvasSize();
                     this.sketchCanvas.width = sketchCanvasSize.x;
                     this.sketchCanvas.height = sketchCanvasSize.y;
+                    this._updateImageSmoothingEnabled(this.sketchContext);
                 }
             }
             this._clear();
@@ -17479,6 +17980,7 @@ $.Drawer.prototype = {
                         self.sketchCanvas.height = sketchCanvasSize.y;
                     });
                 }
+                this._updateImageSmoothingEnabled(this.sketchContext);
             }
             context = this.sketchContext;
         }
@@ -17631,12 +18133,13 @@ $.Drawer.prototype = {
             return;
         }
 
+        var colorIndex = this.viewer.world.getIndexOfItem(tiledImage) % this.debugGridColor.length;
         var context = this.context;
         context.save();
         context.lineWidth = 2 * $.pixelDensityRatio;
         context.font = 'small-caps bold ' + (13 * $.pixelDensityRatio) + 'px arial';
-        context.strokeStyle = this.debugGridColor;
-        context.fillStyle = this.debugGridColor;
+        context.strokeStyle = this.debugGridColor[colorIndex];
+        context.fillStyle = this.debugGridColor[colorIndex];
 
         if ( this.viewport.degrees !== 0 ) {
             this._offsetForRotation({degrees: this.viewport.degrees});
@@ -17647,6 +18150,11 @@ $.Drawer.prototype = {
                 point: tiledImage.viewport.pixelFromPointNoRotate(
                     tiledImage._getRotationPoint(true), true)
             });
+        }
+        if (tiledImage.viewport.degrees === 0 && tiledImage.getRotation(true) % 360 === 0){
+          if(tiledImage._drawer.viewer.viewport.getFlip()) {
+              tiledImage._drawer._flip();
+          }
         }
 
         context.strokeRect(
@@ -17713,6 +18221,13 @@ $.Drawer.prototype = {
         if (tiledImage.getRotation(true) % 360 !== 0) {
             this._restoreRotationChanges();
         }
+
+        if (tiledImage.viewport.degrees === 0 && tiledImage.getRotation(true) % 360 === 0){
+          if(tiledImage._drawer.viewer.viewport.getFlip()) {
+              tiledImage._drawer._flip();
+          }
+        }
+
         context.restore();
     },
 
@@ -17722,8 +18237,8 @@ $.Drawer.prototype = {
             var context = this.context;
             context.save();
             context.lineWidth = 2 * $.pixelDensityRatio;
-            context.strokeStyle = this.debugGridColor;
-            context.fillStyle = this.debugGridColor;
+            context.strokeStyle = this.debugGridColor[0];
+            context.fillStyle = this.debugGridColor[0];
 
             context.strokeRect(
                 rect.x * $.pixelDensityRatio,
@@ -17734,6 +18249,28 @@ $.Drawer.prototype = {
 
             context.restore();
         }
+    },
+
+    /**
+     * Turns image smoothing on or off for this viewer. Note: Ignored in some (especially older) browsers that do not support this property.
+     *
+     * @function
+     * @param {Boolean} [imageSmoothingEnabled] - Whether or not the image is
+     * drawn smoothly on the canvas; see imageSmoothingEnabled in
+     * {@link OpenSeadragon.Options} for more explanation.
+     */
+    setImageSmoothingEnabled: function(imageSmoothingEnabled){
+        if ( this.useCanvas ) {
+            this._imageSmoothingEnabled = imageSmoothingEnabled;
+            this._updateImageSmoothingEnabled(this.context);
+            this.viewer.forceRedraw();
+        }
+    },
+
+    // private
+    _updateImageSmoothingEnabled: function(context){
+        context.msImageSmoothingEnabled = this._imageSmoothingEnabled;
+        context.imageSmoothingEnabled = this._imageSmoothingEnabled;
     },
 
     /**
@@ -17760,8 +18297,26 @@ $.Drawer.prototype = {
         context.save();
 
         context.translate(point.x, point.y);
-        context.rotate(Math.PI / 180 * options.degrees);
+        if(this.viewer.viewport.flipped){
+          context.rotate(Math.PI / 180 * -options.degrees);
+          context.scale(-1, 1);
+        } else{
+          context.rotate(Math.PI / 180 * options.degrees);
+        }
         context.translate(-point.x, -point.y);
+    },
+
+    // private
+    _flip: function(options) {
+      options = options || {};
+      var point = options.point ?
+        options.point.times($.pixelDensityRatio) :
+        this.getCanvasCenter();
+      var context = this._getContext(options.useSketch);
+
+      context.translate(point.x, 0);
+      context.scale(-1, 1);
+      context.translate(-point.x, 0);
     },
 
     // private
@@ -17775,8 +18330,9 @@ $.Drawer.prototype = {
         var pixelDensityRatio = $.pixelDensityRatio;
         var viewportSize = this.viewport.getContainerSize();
         return {
-            x: viewportSize.x * pixelDensityRatio,
-            y: viewportSize.y * pixelDensityRatio
+            // canvas width and height are integers
+            x: Math.round(viewportSize.x * pixelDensityRatio),
+            y: Math.round(viewportSize.y * pixelDensityRatio)
         };
     },
 
@@ -17859,7 +18415,7 @@ $.Drawer.prototype = {
  */
 $.Viewport = function( options ) {
 
-    //backward compatibility for positional args while prefering more
+    //backward compatibility for positional args while preferring more
     //idiomatic javascript options object as the only argument
     var args = arguments;
     if (args.length && args[0] instanceof $.Point) {
@@ -17909,6 +18465,7 @@ $.Viewport = function( options ) {
         minZoomLevel:       $.DEFAULT_SETTINGS.minZoomLevel,
         maxZoomLevel:       $.DEFAULT_SETTINGS.maxZoomLevel,
         degrees:            $.DEFAULT_SETTINGS.degrees,
+        flipped:            $.DEFAULT_SETTINGS.flipped,
         homeFillsViewer:    $.DEFAULT_SETTINGS.homeFillsViewer
 
     }, options );
@@ -18676,13 +19233,13 @@ $.Viewport.prototype = {
     /**
      * Rotates this viewport to the angle specified.
      * @function
+     * @param {Number} degrees The degrees to set the rotation to.
      * @return {OpenSeadragon.Viewport} Chainable.
      */
     setRotation: function(degrees) {
         if (!this.viewer || !this.viewer.drawer.canRotate()) {
             return this;
         }
-
         this.degrees = $.positiveModulo(degrees, 360);
         this._setContentBounds(
             this.viewer.world.getHomeBounds(),
@@ -19320,7 +19877,58 @@ $.Viewport.prototype = {
         var scale = this._contentBoundsNoRotate.width;
         var viewportToImageZoomRatio = (imageWidth / containerWidth) / scale;
         return imageZoom * viewportToImageZoomRatio;
+    },
+
+    /**
+     * Toggles flip state and demands a new drawing on navigator and viewer objects.
+     * @function
+     * @return {OpenSeadragon.Viewport} Chainable.
+     */
+    toggleFlip: function() {
+      this.setFlip(!this.getFlip());
+      return this;
+    },
+
+    /**
+     * Get flip state stored on viewport.
+     * @function
+     * @return {Boolean} Flip state.
+     */
+    getFlip: function() {
+      return this.flipped;
+    },
+
+    /**
+     * Sets flip state according to the state input argument.
+     * @function
+     * @param {Boolean} state - Flip state to set.
+     * @return {OpenSeadragon.Viewport} Chainable.
+     */
+    setFlip: function( state ) {
+      if ( this.flipped === state ) {
+        return this;
+      }
+
+      this.flipped = state;
+      if(this.viewer.navigator){
+        this.viewer.navigator.setFlip(this.getFlip());
+      }
+      this.viewer.forceRedraw();
+
+      /**
+       * Raised when flip state has been changed.
+       *
+       * @event flip
+       * @memberof OpenSeadragon.Viewer
+       * @type {object}
+       * @property {OpenSeadragon.Viewer} eventSource - A reference to the Viewer which raised the event.
+       * @property {Number} flipped - The flip state after this change.
+       * @property {?Object} userData - Arbitrary subscriber-defined object.
+       */
+      this.viewer.raiseEvent('flip', {"flipped": state});
+      return this;
     }
+
 };
 
 }( OpenSeadragon ));
@@ -19362,8 +19970,8 @@ $.Viewport.prototype = {
 (function( $ ){
 
 /**
- * You shouldn't have to create a TiledImage directly; use {@link OpenSeadragon.Viewer#open}
- * or {@link OpenSeadragon.Viewer#addTiledImage} instead.
+ * You shouldn't have to create a TiledImage instance directly; get it asynchronously by
+ * using {@link OpenSeadragon.Viewer#open} or {@link OpenSeadragon.Viewer#addTiledImage} instead.
  * @class TiledImage
  * @memberof OpenSeadragon
  * @extends OpenSeadragon.EventSource
@@ -19412,7 +20020,11 @@ $.Viewport.prototype = {
  */
 $.TiledImage = function( options ) {
     var _this = this;
-
+    /**
+     * The {@link OpenSeadragon.TileSource} that defines this TiledImage.
+     * @member {OpenSeadragon.TileSource} source
+     * @memberof OpenSeadragon.TiledImage#
+     */
     $.console.assert( options.tileCache, "[TiledImage] options.tileCache is required" );
     $.console.assert( options.drawer, "[TiledImage] options.drawer is required" );
     $.console.assert( options.viewer, "[TiledImage] options.viewer is required" );
@@ -19637,6 +20249,10 @@ $.extend($.TiledImage.prototype, $.EventSource.prototype, /** @lends OpenSeadrag
             this._midDraw = true;
             this._updateViewport();
             this._midDraw = false;
+        }
+        // Images with opacity 0 should not need to be drawn in future. this._needsDraw = false is set in this._updateViewport() for other images.
+        else {
+            this._needsDraw = false;
         }
     },
 
@@ -19994,6 +20610,58 @@ $.extend($.TiledImage.prototype, $.EventSource.prototype, /** @lends OpenSeadrag
     },
 
     /**
+     * Sets an array of polygons to crop the TiledImage during draw tiles.
+     * The render function will use the default non-zero winding rule.
+     * @param Polygons represented in an array of point object in image coordinates.
+     * Example format: [
+     *  [{x: 197, y:172}, {x: 226, y:172}, {x: 226, y:198}, {x: 197, y:198}], // First polygon
+     *  [{x: 328, y:200}, {x: 330, y:199}, {x: 332, y:201}, {x: 329, y:202}]  // Second polygon
+     *  [{x: 321, y:201}, {x: 356, y:205}, {x: 341, y:250}] // Third polygon
+     * ]
+     */
+    setCroppingPolygons: function( polygons ) {
+
+        var isXYObject = function(obj) {
+            return obj instanceof $.Point || (typeof obj.x === 'number' && typeof obj.y === 'number');
+        };
+
+        var objectToSimpleXYObject = function(objs) {
+            return objs.map(function(obj) {
+                try {
+                    if (isXYObject(obj)) {
+                        return { x: obj.x, y: obj.y };
+                    } else {
+                        throw new Error();
+                    }
+                } catch(e) {
+                    throw new Error('A Provided cropping polygon point is not supported');
+                }
+            });
+        };
+
+        try {
+            if (!$.isArray(polygons)) {
+                throw new Error('Provided cropping polygon is not an array');
+            }
+            this._croppingPolygons = polygons.map(function(polygon){
+                return objectToSimpleXYObject(polygon);
+            });
+        } catch (e) {
+            $.console.error('[TiledImage.setCroppingPolygons] Cropping polygon format not supported');
+            $.console.error(e);
+            this._croppingPolygons = null;
+        }
+    },
+
+    /**
+     * Resets the cropping polygons, thus next render will remove all cropping
+     * polygon effects.
+     */
+    resetCroppingPolygons: function() {
+        this._croppingPolygons = null;
+    },
+
+    /**
      * Positions and scales the TiledImage to fit in the specified bounds.
      * Note: this method fires OpenSeadragon.TiledImage.event:bounds-change
      * twice
@@ -20176,8 +20844,8 @@ $.extend($.TiledImage.prototype, $.EventSource.prototype, /** @lends OpenSeadrag
     },
 
     /**
-     * @private
      * Get the point around which this tiled image is rotated
+     * @private
      * @param {Boolean} current True for current rotation point, false for target.
      * @returns {OpenSeadragon.Point}
      */
@@ -20291,6 +20959,7 @@ $.extend($.TiledImage.prototype, $.EventSource.prototype, /** @lends OpenSeadrag
 
         // Calculations for the interval of levels to draw
         // can return invalid intervals; fix that here if necessary
+        highestLevel = Math.max(highestLevel, this.source.minLevel || 0);
         lowestLevel = Math.min(lowestLevel, highestLevel);
         return {
             lowestLevel: lowestLevel,
@@ -20695,6 +21364,7 @@ function getTile(
     var xMod,
         yMod,
         bounds,
+        sourceBounds,
         exists,
         url,
         ajaxHeaders,
@@ -20712,6 +21382,7 @@ function getTile(
         xMod    = ( numTiles.x + ( x % numTiles.x ) ) % numTiles.x;
         yMod    = ( numTiles.y + ( y % numTiles.y ) ) % numTiles.y;
         bounds  = tileSource.getTileBounds( level, xMod, yMod );
+        sourceBounds = tileSource.getTileBounds( level, xMod, yMod, true );
         exists  = tileSource.tileExists( level, xMod, yMod );
         url     = tileSource.getTileUrl( level, xMod, yMod );
 
@@ -20732,7 +21403,7 @@ function getTile(
         bounds.x += ( x - xMod ) / numTiles.x;
         bounds.y += (worldHeight / worldWidth) * (( y - yMod ) / numTiles.y);
 
-        tilesMatrix[ level ][ x ][ y ] = new $.Tile(
+        tile = new $.Tile(
             level,
             x,
             y,
@@ -20741,8 +21412,19 @@ function getTile(
             url,
             context2D,
             tiledImage.loadTilesWithAjax,
-            ajaxHeaders
+            ajaxHeaders,
+            sourceBounds
         );
+
+        if (xMod === numTiles.x - 1) {
+            tile.isRightMost = true;
+        }
+
+        if (yMod === numTiles.y - 1) {
+            tile.isBottomMost = true;
+        }
+
+        tilesMatrix[ level ][ x ][ y ] = tile;
     }
 
     tile = tilesMatrix[ level ][ x ][ y ];
@@ -20929,6 +21611,14 @@ function positionTile( tile, overlap, viewport, viewportCenter, levelVisibility,
         sizeC = sizeC.plus( new $.Point( 1, 1 ) );
     }
 
+    if (tile.isRightMost && tiledImage.wrapHorizontal) {
+        sizeC.x += 0.75; // Otherwise Firefox and Safari show seams
+    }
+
+    if (tile.isBottomMost && tiledImage.wrapVertical) {
+        sizeC.y += 0.75; // Otherwise Firefox and Safari show seams
+    }
+
     tile.position   = positionC;
     tile.size       = sizeC;
     tile.squaredDistance   = tileSquaredDistance;
@@ -20972,7 +21662,7 @@ function blendTile( tiledImage, tile, x, y, level, levelOpacity, currentTime ){
 
     tiledImage.lastDrawn.push( tile );
 
-    if ( opacity == 1 ) {
+    if ( opacity === 1 ) {
         setCoverage( tiledImage.coverage, level, x, y, true );
         tiledImage._hasOpaqueTile = true;
     } else if ( deltaTime < blendTimeMillis ) {
@@ -21011,10 +21701,10 @@ function providesCoverage( coverage, level, x, y ) {
     if ( x === undefined || y === undefined ) {
         rows = coverage[ level ];
         for ( i in rows ) {
-            if ( rows.hasOwnProperty( i ) ) {
+            if ( Object.prototype.hasOwnProperty.call( rows, i ) ) {
                 cols = rows[ i ];
                 for ( j in cols ) {
-                    if ( cols.hasOwnProperty( j ) && !cols[ j ] ) {
+                    if ( Object.prototype.hasOwnProperty.call( cols, j ) && !cols[ j ] ) {
                         return false;
                     }
                 }
@@ -21132,15 +21822,19 @@ function compareTiles( previousBest, tile ) {
  * @param {OpenSeadragon.Tile[]} lastDrawn - An unordered list of Tiles drawn last frame.
  */
 function drawTiles( tiledImage, lastDrawn ) {
-    if (tiledImage.opacity === 0 || lastDrawn.length === 0) {
+    if (tiledImage.opacity === 0 || (lastDrawn.length === 0 && !tiledImage.placeholderFillStyle)) {
         return;
     }
-    var tile = lastDrawn[0];
 
-    var useSketch = tiledImage.opacity < 1 ||
-        (tiledImage.compositeOperation &&
-            tiledImage.compositeOperation !== 'source-over') ||
-        (!tiledImage._isBottomItem() && tile._hasTransparencyChannel());
+    var tile = lastDrawn[0];
+    var useSketch;
+
+    if (tile) {
+        useSketch = tiledImage.opacity < 1 ||
+            (tiledImage.compositeOperation &&
+                tiledImage.compositeOperation !== 'source-over') ||
+            (!tiledImage._isBottomItem() && tile._hasTransparencyChannel());
+    }
 
     var sketchScale;
     var sketchTranslate;
@@ -21170,8 +21864,15 @@ function drawTiles( tiledImage, lastDrawn ) {
             // sketch canvas we are going to use for performance reasons.
             bounds = tiledImage.viewport.viewportToViewerElementRectangle(
                 tiledImage.getClippedBounds(true))
-                .getIntegerBoundingBox()
-                .times($.pixelDensityRatio);
+                .getIntegerBoundingBox();
+
+            if(tiledImage._drawer.viewer.viewport.getFlip()) {
+              if (tiledImage.viewport.degrees !== 0 || tiledImage.getRotation(true) % 360 !== 0){
+                bounds.x = tiledImage._drawer.viewer.container.clientWidth - (bounds.x + bounds.width);
+              }
+            }
+
+            bounds = bounds.times($.pixelDensityRatio);
         }
         tiledImage._drawer._clear(true, bounds);
     }
@@ -21193,6 +21894,12 @@ function drawTiles( tiledImage, lastDrawn ) {
                 useSketch: useSketch
             });
         }
+
+        if (tiledImage.viewport.degrees === 0 && tiledImage.getRotation(true) % 360 === 0){
+          if(tiledImage._drawer.viewer.viewport.getFlip()) {
+              tiledImage._drawer._flip();
+          }
+        }
     }
 
     var usedClip = false;
@@ -21210,6 +21917,28 @@ function drawTiles( tiledImage, lastDrawn ) {
         }
         tiledImage._drawer.setClip(clipRect, useSketch);
 
+        usedClip = true;
+    }
+
+    if (tiledImage._croppingPolygons) {
+        tiledImage._drawer.saveContext(useSketch);
+        try {
+            var polygons = tiledImage._croppingPolygons.map(function (polygon) {
+                return polygon.map(function (coord) {
+                    var point = tiledImage
+                        .imageToViewportCoordinates(coord.x, coord.y, true)
+                        .rotate(-tiledImage.getRotation(true), tiledImage._getRotationPoint(true));
+                    var clipPoint = tiledImage._drawer.viewportCoordToDrawerCoord(point);
+                    if (sketchScale) {
+                        clipPoint = clipPoint.times(sketchScale);
+                    }
+                    return clipPoint;
+                });
+            });
+            tiledImage._drawer.clipWithPolygons(polygons, useSketch);
+        } catch (e) {
+            $.console.error(e);
+        }
         usedClip = true;
     }
 
@@ -21303,6 +22032,15 @@ function drawTiles( tiledImage, lastDrawn ) {
             }
         }
     }
+
+    if (!sketchScale) {
+      if (tiledImage.viewport.degrees === 0 && tiledImage.getRotation(true) % 360 === 0){
+        if(tiledImage._drawer.viewer.viewport.getFlip()) {
+            tiledImage._drawer._flip();
+        }
+      }
+    }
+
     drawDebugInfo( tiledImage, lastDrawn );
 }
 
