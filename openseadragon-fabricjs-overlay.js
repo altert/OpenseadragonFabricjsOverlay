@@ -22,13 +22,24 @@
      * @returns {Overlay}
      */
     OpenSeadragon.Viewer.prototype.fabricjsOverlay = function (options) {
+        // Default
+        this._fabricjsOverlayInfo = new Overlay(this);
+        this._fabricjsOverlayInfo._scale = 1000;
 
-        this._fabricjsOverlayInfo = new Overlay(this, options.static);
-        if (options && options.scale) {
-            this._fabricjsOverlayInfo._scale = options.scale; // arbitrary scale for created fabric canvas
-        }
-        else {
-            this._fabricjsOverlayInfo._scale = 1000;
+        // Set if options
+        if (options) {
+            if (options.static) {
+                this._fabricjsOverlayInfo = new Overlay(this, options.static);
+            } else {
+                this._fabricjsOverlayInfo = new Overlay(this, false);
+            }
+
+            if (options.scale) {
+                this._fabricjsOverlayInfo._scale = options.scale; // arbitrary scale for created fabric canvas
+            }
+            else {
+                this._fabricjsOverlayInfo._scale = 1000;
+            }
         }
 
         return this._fabricjsOverlayInfo;
@@ -164,7 +175,6 @@
                 this._canvasdiv.setAttribute('width', this._containerWidth);
                 this._canvas.setAttribute('width', this._containerWidth);
             }
-
             if (this._containerHeight !== this._viewer.container.clientHeight) {
                 this._containerHeight = this._viewer.container.clientHeight;
                 this._canvasdiv.setAttribute('height', this._containerHeight);
@@ -184,13 +194,10 @@
             let x = Math.round(viewportWindowPoint.x);
             let y = Math.round(viewportWindowPoint.y);
             let canvasOffset = this._canvasdiv.getBoundingClientRect();
-
             let pageScroll = OpenSeadragon.getPageScroll();
-
             this._fabricCanvas.absolutePan(new fabric.Point(canvasOffset.left - x + pageScroll.x, canvasOffset.top - y + pageScroll.y));
 
         }
-
     };
 
 })();
