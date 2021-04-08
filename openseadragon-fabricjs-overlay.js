@@ -52,7 +52,7 @@
      * @constructor
      */
     let Overlay = function (viewer, staticCanvas, fabricCanvasOptions = {}) {
-        fabricCanvasOptions.enablePointerEvents = true;
+        fabricCanvasOptions.enablePointerEvents = window.PointerEvent != null;
         let self = this;
 
         this._viewer = viewer;
