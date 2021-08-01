@@ -51,7 +51,8 @@
      * @param viewer
      * @constructor
      */
-    let Overlay = function (viewer, staticCanvas) {
+    let Overlay = function (viewer, staticCanvas, fabricCanvasOptions = {}) {
+        fabricCanvasOptions.enablePointerEvents = window.PointerEvent != null;
         let self = this;
 
         this._viewer = viewer;
@@ -76,10 +77,10 @@
 
         // make the canvas static if specified, ordinary otherwise
         if (staticCanvas) {
-            this._fabricCanvas = new fabric.StaticCanvas(this._canvas);
+            this._fabricCanvas = new fabric.StaticCanvas(this._canvas, fabricCanvasOptions);
         }
         else {
-            this._fabricCanvas = new fabric.Canvas(this._canvas);
+            this._fabricCanvas = new fabric.Canvas(this._canvas, fabricCanvasOptions);
         }
 
         // Disable fabric selection because default click is tracked by OSD
