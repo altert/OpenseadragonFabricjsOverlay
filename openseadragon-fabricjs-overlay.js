@@ -1,6 +1,6 @@
 /**
  * OpenSeadragon canvas Overlay plugin based on svg overlay plugin and fabric.js
- * @version 0.0.2
+ * @version 0.6.0
  */
 (function () {
 
