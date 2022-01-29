@@ -185,7 +185,8 @@
 
         },
         OnViewportChange: function(e) {
-            // update view bounds this way to avoid reszing the canvas, since it's expensive to constantly resize the canvas...
+            // Update view bounds this way to avoid reszing the canvas, since it's expensive to constantly resize the canvas...
+            // Currently no support for rotation since fabric does not support viewport rotation...
 
             // get Zoom
             let cSize = this._viewer.viewport._containerInnerSize;
