@@ -109,26 +109,20 @@
         });
 
         /**
-         * Update viewport
+         * Update Pan & Zoom accordingly on viewport-change
          */
-        this._viewer.addHandler('update-viewport', function () {
-            self.resize();
-            self.resizeCanvas();
-            self.render();
-
-        });
+        this._viewer.addHandler('viewport-change', self.OnViewportChange.bind(self));
 
         /**
          * Resize the fabric.js overlay when the viewer or window changes size
          */
-        this._viewer.addHandler('open', function () {
+        let doResizeAll = function (){
             self.resize();
             self.resizeCanvas();
-        });
-        window.addEventListener('resize', function () {
-            self.resize();
-            self.resizeCanvas();
-        });
+        };
+        this._viewer.addHandler('open', doResizeAll);
+        this._viewer.addHandler('resize', doResizeAll);
+        window.addEventListener('resize', doResizeAll);
 
     };
 
@@ -189,6 +183,20 @@
 
             this._fabricCanvas.absolutePan(new fabric.Point(canvasOffset.left - x + pageScroll.x, canvasOffset.top - y + pageScroll.y));
 
+        },
+        OnViewportChange: function(e) {
+            // update view bounds this way to avoid reszing the canvas, since it's expensive to constantly resize the canvas...
+
+            // get Zoom
+            let cSize = this._viewer.viewport._containerInnerSize;
+            let zoom = cSize.x * this._viewer.viewport.getZoom(true) / this._scale;
+
+            // get X,Y position
+            let b = this._viewer.viewport.getBounds(true);
+            let wPt = this._viewer.viewport.pixelFromPoint(new OpenSeadragon.Point(b), true);
+
+            // update the canvas viewport
+            this._fabricCanvas.setViewportTransform([zoom, 0, 0, zoom, wPt.x, wPt.y]);
         }
 
     };
